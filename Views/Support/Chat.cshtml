@@ -1,0 +1,3 @@
+@model List<SupportMessage>
+
+@{ViewData["Title"]="Support Conversation";}<div class="panel"><h3>@ViewBag.C?.VisitorName — @ViewBag.C?.Status</h3><div class="staffchat">@foreach(var x in Model){<p><b>@x.Sender:</b> @x.Message <small>@x.SentAt.ToString("g")</small></p>}</div><form method="post" action="/Support/Reply" class="form"><input type="hidden" name="id" value="@ViewBag.C?.Id"><input name="message" placeholder="Reply as staff..." required style="min-width:400px"><button class="primary">Send Reply</button></form><form method="post" action="/Support/Close"><input type="hidden" name="id" value="@ViewBag.C?.Id"><button>Close Conversation</button></form></div>

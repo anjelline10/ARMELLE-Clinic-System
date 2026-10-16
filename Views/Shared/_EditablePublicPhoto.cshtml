@@ -1,0 +1,28 @@
+@model Armelle.Models.EditablePhotoSlot
+@inject Armelle.Services.PublicPhotoStore PhotoStore
+@using Microsoft.AspNetCore.Http
+@{
+    var canEdit = Context.Session.GetString("Role") == "Owner" && !string.IsNullOrEmpty(Context.Session.GetString("User"));
+    var path = PhotoStore.Resolve(Model.Key, Model.DefaultPath);
+}
+<div class="armelle-editable-photo">
+    @if (!string.IsNullOrWhiteSpace(path))
+    {
+        <img src="@path" alt="@Model.Alt" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block" />
+    }
+    else
+    {
+        <div class="armelle-photo-empty">@Model.Alt</div>
+    }
+    @if (canEdit)
+    {
+        <form method="post" action="/Public/UploadPublicPhoto" enctype="multipart/form-data" class="armelle-photo-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="key" value="@Model.Key" />
+            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+            <label class="armelle-photo-label">📷 Change Photo
+                <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required onchange="this.form.requestSubmit()" />
+            </label>
+        </form>
+    }
+</div>

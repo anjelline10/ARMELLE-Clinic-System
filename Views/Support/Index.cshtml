@@ -1,0 +1,3 @@
+@model List<SupportConversation>
+
+@{ViewData["Title"]="Live Support";}<div class="panel"><h3>AI → Human Support Queue</h3><table><tr><th>Visitor</th><th>Email</th><th>Status</th><th>Assigned</th><th>Updated</th><th></th></tr>@foreach(var x in Model){<tr><td>@x.VisitorName</td><td>@x.Email</td><td>@x.Status</td><td>@x.AssignedTo</td><td>@x.UpdatedAt</td><td><a href="/Support/Chat/@x.Id">Open Chat</a></td></tr>}</table></div>

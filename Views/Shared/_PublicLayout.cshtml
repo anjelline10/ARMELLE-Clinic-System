@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ARMELLE | @ViewData["Title"]</title><link rel="stylesheet" href="/css/site.css">
+<style>
+.armelle-editable-photo{position:relative;width:100%;height:100%;min-height:135px;overflow:hidden;border-radius:inherit;background:#f7eaf0}
+.armelle-photo-empty{min-height:220px;display:flex;align-items:center;justify-content:center;color:#9a5270;padding:18px;text-align:center}
+.armelle-photo-form{position:absolute;bottom:10px;left:10px;z-index:5;margin:0}
+.armelle-photo-label{display:inline-block;background:#a13b68;color:white;border-radius:18px;padding:9px 13px;font:600 12px Arial,sans-serif;cursor:pointer;box-shadow:0 2px 8px #0003}
+.armelle-photo-label input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.branch-preview-item .armelle-editable-photo,.branch-gallery-item .armelle-editable-photo{min-height:170px}
+.resource-photo-grid figure .armelle-editable-photo{min-height:150px}
+</style>
+</head>
+@{ var currentUser=Context.Session.GetString("User"); var currentRole=Context.Session.GetString("Role"); var homeUrl=currentRole=="Patient"?"/Patient":"/"; }
+<body class="public">
+<header class="pubnav">
+ <a class="pubbrand" href="@homeUrl"><img class="brandlogo" src="/images/armelle-logo.png" alt="ARMELLE logo"><span class="brandtext"><b>ARMELLE</b><small>Multi-Specialty Center</small></span></a>
+ <button class="navtoggle" type="button" aria-label="Open navigation" onclick="document.querySelector('.pubnav').classList.toggle('menuopen')">☰</button>
+ <nav class="publicmenu">
+  <a href="@homeUrl">Home</a>
+  <a href="/Public/Doctors" class="nav-main-link">Find a Doctor</a>
+  <div class="navdrop"><button type="button">Services <span>⌄</span></button><section class="mega"><a href="/Public/Services?q=Consultation">Consultations & Specialty Care</a><a href="/Public/Services?q=Laboratory">Laboratory & Blood Tests</a><a href="/Public/Services?q=Imaging">X-Ray & Diagnostic Imaging</a><a href="/Public/Services?q=Dental">Dental Care</a><a href="/Public/Services?q=Procedure">Minor Outpatient Procedures</a><a href="/Public/Services?q=Wellness">Preventive & Wellness Care</a><a href="/Public/Services?q=Vaccination">Vaccination & Immunization</a><a href="/Public/Services?q=Animal Bite">Animal Bite / Rabies Prevention</a><a href="/Public/Services?q=Rehabilitation">Rehabilitation / Therapy</a><a href="/Public/Services?q=Screening">Health Screening & Packages</a><a href="/Public/Services?q=Pharmacy">Pharmacy</a><a href="/Public/Services?q=Women">Women's Health</a><a href="/Public/Services?q=Pediatric">Pediatric Care</a><a href="/Public/Services?q=Chronic">Chronic Disease Management</a><a class="all-link" href="/Public/Services">All Services & Prices</a></section></div>
+  <div class="navdrop"><button type="button">Patient Resources <span>⌄</span></button><section><a href="/Public/Resources?category=Guide">Patient Guide</a><a href="/Public/Resources?category=HMO">HMO Assistance</a><a href="/Public/Resources?category=PhilHealth">PhilHealth Guide</a><a href="/Public/Resources?category=Price">Price Transparency</a><a href="/Public/Resources?category=Laboratory">Laboratory Preparation</a><a href="/Public/Resources?category=Imaging">X-Ray / Diagnostic Preparation</a><a href="/Public/Resources?category=Pharmacy">Pharmacy Guide</a><a href="/Public/Resources?category=Rights">Patient Rights</a><a href="/Public/Resources?category=FAQ">Health Library & FAQs</a><a href="/Public/Resources?category=Appointment">Appointment & Cancellation Guide</a></section></div>
+  <div class="navdrop"><button type="button">About <span>⌄</span></button><section><a href="/Public/About?section=about">About ARMELLE</a><a href="/Public/About?section=history">Our History</a><a href="/Public/About?section=mission">Mission</a><a href="/Public/About?section=vision">Vision</a><a href="/Public/About?section=values">Core Values</a><a href="/Public/About?section=facilities">Our Facilities</a><a href="/Public/Team">Our Medical Team</a><a href="/Public/Locations">Our Branches</a><a href="/Public/Gallery">Gallery</a></section></div>
+  <a href="/Public/Locations">Branches</a><a href="/Public/Contact">Contact</a>
+ </nav>
+ <div class="pubactions"><button class="ai-nav" type="button" onclick="toggleAI()">Ask AI</button><a href="/Public/Book" class="outline">Book</a>@if(currentRole=="Patient"){<a href="/Patient" class="primarylink">My Portal</a><a href="/Auth/Logout" class="outline">Logout</a>}else{<a href="/Auth/Login" class="primarylink">Login</a>}</div>
+</header>
+<main class="pubmain">@RenderBody()</main>
+<footer class="pubfooter"><div><b>ARMELLE</b><p>Complete Care for a Healthier Tomorrow</p></div><div>CARE BEYOND COMPARE<br><small>PEOPLE | CARE | COMMUNITY</small></div></footer>
+<button id="aiFab" class="aifab" onclick="toggleAI()">✦ Ask ARMELLE</button>
+<div id="aiBox" class="aibox"><div class="aihead"><b>Ask ARMELLE</b><span>AI + Live Support</span><button onclick="toggleAI()">×</button></div><div id="aiMsgs" class="aimsgs"><div class="bot">Hi! Ask me in English, Filipino, or Taglish about doctors, services, prices, appointments, branches, laboratory, pharmacy, HMO or PhilHealth.</div></div><div class="quick"><button onclick="quick('Help me find a doctor')">Find Doctor</button><button onclick="quick('I want to book an appointment')">Appointment</button><button onclick="quick('Tell me about PhilHealth')">PhilHealth</button><button onclick="human()">Talk to Agent</button></div><div class="aicompose"><input id="aiInput" placeholder="Ask anything about ARMELLE..."><button onclick="askAI()">Send</button></div><div class="rating"><span>Rate support:</span><button onclick="rate(5)">★★★★★</button></div></div>
+<script src="/js/public.js"></script></body></html>

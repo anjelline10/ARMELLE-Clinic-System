@@ -1,0 +1,19 @@
+@using Armelle.Models
+@{
+    Layout="_Layout";
+    ViewData["Title"]="My Workforce Dashboard";
+    var user=(string)(ViewBag.WorkforceUser??"ARMELLE Team Member");
+    var role=(string)(ViewBag.WorkforceRole??"Staff");
+    var group=(string)(ViewBag.DashboardGroup??"Staff");
+    var employee=ViewBag.Employee as Employee;
+    var doctor=ViewBag.Doctor as Doctor;
+    var payroll=ViewBag.Payroll as List<Payroll> ?? new();
+}
+<div class="mydash-hero"><div><p class="eyebrow">@group.ToUpper()</p><h1>Hello, @user.</h1><p>Your ARMELLE workspace is personalized for <b>@role</b>. Access your work tools, schedule, attendance, payroll and concerns from one place.</p></div><div class="mydash-profile"><div class="wf-avatar large"><span>@user.Substring(0,1).ToUpper()</span></div><b>@user</b><small>@role</small></div></div>
+<div class="mydash-grid">
+<a href="@(group=="Doctors"?"/Clinic/Appointments":group=="Pharmacy"?"/Clinic/Pharmacy":group=="Laboratory"||group=="Radiology / Imaging"?"/Clinic/Laboratory":group=="Billing & Cashier"?"/Clinic/Billing":"/Clinic/Queue")"><b>My Work</b><span>Open the tools and patient workflow for your assigned role.</span></a>
+<a href="/Clinic/Employees"><b>Attendance</b><span>Time in/out, shift, late/early-out and duty information.</span></a>
+<a href="/Clinic/Payroll"><b>Payroll & Monthly Pay</b><span>Review payroll records, overtime, deductions and net pay.</span></a>
+<a href="/Support"><b>Concerns & Support</b><span>Send or follow up workplace concerns and support requests.</span></a>
+</div>
+<div class="mydash-panels"><article><h3>My assignment</h3><p><b>Role:</b> @role</p><p><b>Branch:</b> @(employee?.Branch ?? doctor?.Branch ?? "Assigned by management")</p><p><b>Department / Specialty:</b> @(employee?.Department ?? doctor?.Specialty ?? group)</p><p><b>Shift / Schedule:</b> @(employee?.Shift ?? doctor?.Schedule ?? "See schedule")</p></article><article><h3>Recent payroll</h3>@if(payroll.Any()){@foreach(var p in payroll){<p><b>₱@p.NetPay.ToString("N2")</b> · @p.Status</p>}}else{<p>No payroll record is currently linked to this account.</p>}</article></div>

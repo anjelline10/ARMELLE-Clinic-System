@@ -1,0 +1,177 @@
+
+@model Armelle.Models.Consultation
+
+@{
+    Layout = null;
+    ViewData["Title"] = "ARMELLE Consultation Record";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>ARMELLE | Consultation Record</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 25px;
+            color: #333;
+            line-height: 1.7;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #9e496e;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #9e496e;
+            margin-bottom: 5px;
+            font-size: 25px;
+        }
+
+        .header h2 {
+            font-size: 17px;
+            margin-top: 5px;
+        }
+
+        .record-info {
+            margin-bottom: 25px;
+        }
+
+        .record-info p {
+            margin: 8px 0;
+        }
+
+        .prescription-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            min-height: 100px;
+        }
+
+        .prescription-box pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+        }
+
+        .warning {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #e3b6b6;
+            color: #8b3333;
+            font-size: 12px;
+        }
+
+        .print-controls {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .print-button {
+            padding: 12px 25px;
+            background: #9e496e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        @@media print {
+            body {
+                margin: 0;
+                padding: 15px;
+                max-width: none;
+            }
+
+            .print-controls {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>ARMELLE MULTI-SPECIALTY CENTER</h1>
+        <h2>CONSULTATION / PRESCRIPTION RECORD</h2>
+    </div>
+
+    <div class="record-info">
+        <p>
+            <strong>Patient:</strong>
+            @Model.Patient
+        </p>
+
+        <p>
+            <strong>Doctor Recorded:</strong>
+            @Model.Doctor
+        </p>
+
+        <p>
+            <strong>Date:</strong>
+            @Model.Date.ToString("MMMM dd, yyyy")
+        </p>
+
+        <p>
+            <strong>Diagnosis:</strong>
+            @(string.IsNullOrWhiteSpace(Model.Diagnosis)
+                ? "Not recorded"
+                : Model.Diagnosis)
+        </p>
+    </div>
+
+    <h3>Prescription Information</h3>
+
+    <div class="prescription-box">
+        @if (!string.IsNullOrWhiteSpace(Model.Prescription))
+        {
+            <pre>@Model.Prescription</pre>
+        }
+        else
+        {
+            <p>No prescription issued.</p>
+        }
+    </div>
+
+    <div class="warning">
+        <strong>
+            DEMONSTRATION RECORD - NOT VALID FOR DISPENSING
+        </strong>
+
+        <p>
+            This document is a consultation record only.
+            It is not a valid medical prescription unless
+            independently authenticated by an authorized
+            licensed physician.
+        </p>
+
+        <p>
+            No physician signature is automatically generated
+            by this system.
+        </p>
+    </div>
+
+    <div class="print-controls">
+        <button type="button"
+                class="print-button"
+                onclick="window.print()">
+            Print / Save as PDF
+        </button>
+    </div>
+
+</body>
+</html>

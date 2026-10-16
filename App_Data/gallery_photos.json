@@ -1,0 +1,476 @@
+[
+  {
+    "Id": 71,
+    "Title": "Prescription Processing",
+    "ImagePath": "/uploads/gallery/e963f5aaff4d48a5b3a992870689927c.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 45,
+    "Title": "Urology Consultation",
+    "ImagePath": "/uploads/gallery/f6b19d4d021f4c5692970e73ef2eab1f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 95,
+    "Title": "Security \u0026 Monitoring",
+    "ImagePath": "/uploads/gallery/6b9785bd4b714fc98a9ad31a557bb193.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 1,
+    "Title": "Main Building Exterior \u2013 Day",
+    "ImagePath": "/uploads/gallery/c18555bde3da496bb9706e8a52929b2f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 2,
+    "Title": "Main Building Exterior \u2013 Evening",
+    "ImagePath": "/uploads/gallery/02f3afca20c74acd88b649405e28f847.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 3,
+    "Title": "Main Entrance \u0026 Drop-Off",
+    "ImagePath": "/uploads/gallery/6c9b58044fd64ac1a349d42ef0bef6a0.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 4,
+    "Title": "Main Reception Lobby",
+    "ImagePath": "/uploads/gallery/a3d134ba54d7467cb04de16ed06c9580.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 5,
+    "Title": "Patient Waiting Lounge",
+    "ImagePath": "/uploads/gallery/5d172fdef10b4ab49d88920c5af9d21f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 6,
+    "Title": "Main Clinic Hallway",
+    "ImagePath": "/uploads/gallery/2f4977ee44d3461c93df48b5bee23619.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 7,
+    "Title": "Information Desk",
+    "ImagePath": "/uploads/gallery/657c61844a1d4d7b9ae143bba8b15388.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 8,
+    "Title": "Appointment \u0026 Registration",
+    "ImagePath": "/uploads/gallery/deb1738a52f241ce8628bb07575eb78b.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 9,
+    "Title": "Cashier \u0026 Billing",
+    "ImagePath": "/uploads/gallery/706c062aba864aa3bf68e5f51e71520f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 10,
+    "Title": "HMO \u0026 PhilHealth Desk",
+    "ImagePath": "/uploads/gallery/eff626986d534b709c3a11aa45db09f0.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 11,
+    "Title": "Patient Queue Area",
+    "ImagePath": "/uploads/gallery/055cc23dc52b43dbbdaf4ac9a0abd9f6.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 12,
+    "Title": "General Medicine Consultation",
+    "ImagePath": "/uploads/gallery/81783a8d68e24bdabb0739fb142036be.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 13,
+    "Title": "General Medicine Examination",
+    "ImagePath": "/uploads/gallery/50783c47298b4f5e89dcb5d7b76a8001.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 14,
+    "Title": "Internal Medicine Consultation",
+    "ImagePath": "/uploads/gallery/a52d59a0c332420fa81e1a2d0b497ebc.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 15,
+    "Title": "Internal Medicine Examination",
+    "ImagePath": "/uploads/gallery/520e21acc2e84fba948b6a2b44ed2340.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 16,
+    "Title": "Pediatric Waiting",
+    "ImagePath": "/uploads/gallery/c2cfc6f5c421424b9388dfa818293244.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 17,
+    "Title": "Pediatric Consultation",
+    "ImagePath": "/uploads/gallery/09ebceb1a5d3476099da0e32b4f7175e.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 46,
+    "Title": "Mental Health Consultation",
+    "ImagePath": "/uploads/gallery/7bf358bac29c42f7b8cee8b15ef09d65.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 18,
+    "Title": "Pediatric Examination",
+    "ImagePath": "/uploads/gallery/9a9da7a82113455fbaecf906680880e4.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 19,
+    "Title": "OB-GYN Consultation",
+    "ImagePath": "/uploads/gallery/e1fd687fe56e4b3688e50276b532caa1.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 20,
+    "Title": "OB-GYN Examination",
+    "ImagePath": "/uploads/gallery/fe627605daf44fe2b6734f4a4e7138e5.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 21,
+    "Title": "Prenatal Assessment",
+    "ImagePath": "/uploads/gallery/b9939f82044c4e75b9307b5b423471de.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 22,
+    "Title": "Maternity Reception",
+    "ImagePath": "/uploads/gallery/7889d8c0e0e3409393fbff5623be5b1a.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 23,
+    "Title": "Labor Assessment",
+    "ImagePath": "/uploads/gallery/fea4224757344f859f2d096938955b50.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 24,
+    "Title": "Birthing Room",
+    "ImagePath": "/uploads/gallery/33b477a9a3074c3181b5211bf8b38897.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 25,
+    "Title": "Newborn Care",
+    "ImagePath": "/uploads/gallery/fbdadbae37d048eaaccd712a55f64320.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 26,
+    "Title": "Mother \u0026 Baby Recovery",
+    "ImagePath": "/uploads/gallery/48a860f61b214effbadc717158a2e900.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 27,
+    "Title": "Cardiology Consultation",
+    "ImagePath": "/uploads/gallery/9120c179c04b4c6b9d83fd7c5ec8730e.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 28,
+    "Title": "ECG \u0026 Cardiac Assessment",
+    "ImagePath": "/uploads/gallery/203d35a4c6214ff1be5f2f03d2302141.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 29,
+    "Title": "Dermatology Consultation",
+    "ImagePath": "/uploads/gallery/d827a7c843dc4e38b867303ebd440d21.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 30,
+    "Title": "Skin Examination \u0026 Treatment",
+    "ImagePath": "/uploads/gallery/080ac156796c450cb7a413a862b1cad9.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 31,
+    "Title": "ENT Consultation",
+    "ImagePath": "/uploads/gallery/bbc3247d43244fe1b77292bb270d5476.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 32,
+    "Title": "ENT Examination \u0026 Procedure",
+    "ImagePath": "/uploads/gallery/0527f6ea23504b15babf613c8a824b6d.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 33,
+    "Title": "ENT Diagnostic Equipment",
+    "ImagePath": "/uploads/gallery/59f14581f024481ba402b0bb6c8e4e0d.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 34,
+    "Title": "Ophthalmology Consultation",
+    "ImagePath": "/uploads/gallery/1b63ba10d4ab4c318e0a074ecc00456e.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 35,
+    "Title": "Vision Screening",
+    "ImagePath": "/uploads/gallery/c4f5264f0d634ff198be9b3c75ba5f53.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 36,
+    "Title": "Eye Examination \u0026 Diagnostic",
+    "ImagePath": "/uploads/gallery/a40a07774d9145b88769ba9905f37d99.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 37,
+    "Title": "Orthopedic Consultation",
+    "ImagePath": "/uploads/gallery/1f01764ccfd3438983231a8817167905.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 38,
+    "Title": "Musculoskeletal Examination",
+    "ImagePath": "/uploads/gallery/28f7eed7094f4bf9974673c17875ec5b.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 39,
+    "Title": "Pulmonology Consultation",
+    "ImagePath": "/uploads/gallery/4a01b9b24b734759ba21280829fd8fbd.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 40,
+    "Title": "Respiratory Assessment",
+    "ImagePath": "/uploads/gallery/894a21fdb2c741db81f518882c190de7.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 41,
+    "Title": "Endocrinology \u0026 Diabetes",
+    "ImagePath": "/uploads/gallery/5494c9067e94469c92284dcc5a01b9f3.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 42,
+    "Title": "Neurology Consultation \u0026 Examination",
+    "ImagePath": "/uploads/gallery/414a47df35bc4c6d838ad38cf9744c0b.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 43,
+    "Title": "Gastroenterology Consultation",
+    "ImagePath": "/uploads/gallery/f199f52790ff4f71bbf1b98a2a63bf1c.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 44,
+    "Title": "Nephrology Consultation",
+    "ImagePath": "/uploads/gallery/77a981c5649c47a1ac5bac367bef828e.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 47,
+    "Title": "Rehabilitation Medicine Consultation",
+    "ImagePath": "/uploads/gallery/93e8c0ff049346b79ccff52634257573.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 48,
+    "Title": "Physical Therapy \u0026 Exercise",
+    "ImagePath": "/uploads/gallery/b903c03e2bec4869969d44d4e399c73c.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 49,
+    "Title": "Dental Reception",
+    "ImagePath": "/uploads/gallery/45dd4bc3f1774a3a9951b89087e00272.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 50,
+    "Title": "Dental Consultation",
+    "ImagePath": "/uploads/gallery/4e24182e6a8a426b8e5b7680da958b8b.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 51,
+    "Title": "Dental Treatment",
+    "ImagePath": "/uploads/gallery/6e5dbc0be4284300aff3511175a5d4fa.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 52,
+    "Title": "Dental X-Ray",
+    "ImagePath": "/uploads/gallery/65567bb5a8254cbf9e29652351c3da49.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 53,
+    "Title": "Laboratory Reception",
+    "ImagePath": "/uploads/gallery/8d82c02bc6264ce394d92aeb2ee1ffcd.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 54,
+    "Title": "Blood Extraction",
+    "ImagePath": "/uploads/gallery/996fe4ecf86e46048f078af05f3d0283.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 55,
+    "Title": "Specimen Collection",
+    "ImagePath": "/uploads/gallery/378860ff665d4b4fa7714560a9bf2e0f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 56,
+    "Title": "Clinical Laboratory Processing",
+    "ImagePath": "/uploads/gallery/611dbd0a97314c3c9985cbe4152f0528.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 57,
+    "Title": "Laboratory Equipment \u0026 Analysis",
+    "ImagePath": "/uploads/gallery/af057ec4b43d4c36b6643360390d886f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 58,
+    "Title": "Diagnostic Imaging Reception",
+    "ImagePath": "/uploads/gallery/eae78670d2034513b94af8abdece7b96.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 59,
+    "Title": "Digital X-Ray",
+    "ImagePath": "/uploads/gallery/227036ce092749f9b01fe2a8de5b995f.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 60,
+    "Title": "X-Ray Control Room",
+    "ImagePath": "/uploads/gallery/1304a76fd7d640199e68455389dadf68.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 61,
+    "Title": "Animal Bite Reception",
+    "ImagePath": "/uploads/gallery/1c6b4673f80342148d930b28dd63e6df.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 62,
+    "Title": "Animal Bite Assessment",
+    "ImagePath": "/uploads/gallery/62572871528a4d87bdb65037b3616084.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 63,
+    "Title": "Wound Care \u0026 Treatment",
+    "ImagePath": "/uploads/gallery/4338bd9b1c544b52b4e627c4f3679698.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 64,
+    "Title": "Anti-Rabies Vaccination",
+    "ImagePath": "/uploads/gallery/c211dcd0883a4d83ad6c961fba41e2b8.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 65,
+    "Title": "General Vaccination",
+    "ImagePath": "/uploads/gallery/f53c003306d64251a933a22126e4419a.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 66,
+    "Title": "Vaccine Preparation \u0026 Storage",
+    "ImagePath": "/uploads/gallery/f217e58398444e3595b3f786f3bf2f48.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 67,
+    "Title": "Minor Outpatient Procedure",
+    "ImagePath": "/uploads/gallery/6f7327331d6542cb9a1391778267ef40.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 68,
+    "Title": "Sterile Preparation",
+    "ImagePath": "/uploads/gallery/b779ebd282c9424caa6be7d4b89692c8.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 69,
+    "Title": "ARMELLE Pharmacy",
+    "ImagePath": "/uploads/gallery/9afcb11aec9843fd8397923ad13bb42d.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 70,
+    "Title": "Pharmacy Dispensing",
+    "ImagePath": "/uploads/gallery/623bbceb94d54c3aabc23d9df658e278.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 72,
+    "Title": "Medicine Storage \u0026 Inventory",
+    "ImagePath": "/uploads/gallery/f0306093cdde42438e285da03e5f3dc8.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 73,
+    "Title": "Medicine Pickup",
+    "ImagePath": "/uploads/gallery/7a0638b01eb64cb8b1440368b213ca27.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 74,
+    "Title": "Central Nurse Station",
+    "ImagePath": "/uploads/gallery/9b5e410062174bba8db91860f6617aec.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 75,
+    "Title": "Patient Vitals \u0026 Assessment",
+    "ImagePath": "/uploads/gallery/499ca6be76e74e5db99a8df84170dafb.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 76,
+    "Title": "Treatment \u0026 Medication",
+    "ImagePath": "/uploads/gallery/9eca27da0aa44a859e7b9d06a056cecc.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 77,
+    "Title": "Doctors Lounge",
+    "ImagePath": "/uploads/gallery/54b6a253bdb7475fabf156760ab708ba.png",
+    "IsCustom": true
+  },
+  {
+    "Id": 78,
+    "Title": "Nurses Lounge",
+    "ImagePath": "/uploads/gallery/c14a109f2b674abf94e37afdf469d179.png",
+    "IsCustom": true
+  }
+]

@@ -1,0 +1,550 @@
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@using Armelle.Models
+
+@{
+    Layout = null;
+
+    var doctors = (ViewBag.Doctors as IEnumerable<Doctor>
+        ?? Enumerable.Empty<Doctor>())
+        .Where(d => d.IsActive)
+        .ToList();
+
+    var appointments = ViewBag.Appointments as IEnumerable<Appointment>
+        ?? Enumerable.Empty<Appointment>();
+
+    var invoices = ViewBag.Invoices as IEnumerable<Invoice>
+        ?? Enumerable.Empty<Invoice>();
+
+    var releases = ViewBag.ReleasedPrescriptions as IEnumerable<PrescriptionRelease> ?? Enumerable.Empty<PrescriptionRelease>();
+    var signedDocuments = ViewBag.PrescriptionDocuments as IEnumerable<PrescriptionDocument> ?? Enumerable.Empty<PrescriptionDocument>();
+    var consults = ViewBag.Consultations as IEnumerable<Consultation>
+        ?? Enumerable.Empty<Consultation>();
+
+    var labs = ViewBag.Labs as IEnumerable<LabRequest>
+        ?? Enumerable.Empty<LabRequest>();
+
+    var profile = ViewBag.Profile as Patient;
+    var userName = Convert.ToString(ViewBag.User) ?? "Patient";
+
+    var unpaidInvoices = invoices
+        .Where(x => x.Status != "Paid")
+        .ToList();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>ARMELLE | Patient Records</title>
+
+    <style>
+            body {
+                font-family: Segoe UI, Arial, sans-serif;
+                background: #fff8fb;
+                color: #332630;
+                max-width: 1100px;
+                margin: auto;
+                padding: 22px;
+            }
+
+            section {
+                background: white;
+                border: 1px solid #eadbe2;
+                border-radius: 14px;
+                padding: 20px;
+                margin: 16px 0;
+            }
+
+            input, select, button {
+                padding: 9px;
+                margin: 5px;
+                border: 1px solid #dbcbd3;
+                border-radius: 7px;
+            }
+
+            button {
+                background: #9e496e;
+                color: white;
+                cursor: pointer;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            td, th {
+                padding: 9px;
+                border-bottom: 1px solid #eee;
+                text-align: left;
+            }
+
+            a {
+                color: #9e496e;
+            }
+
+            .hint {
+                color: #756b72;
+                font-size: 0.9em;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+            @@media print {
+                button {
+                    display: none;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <h1>ARMELLE Patient Portal</h1>
+
+    <p>
+        Welcome, @userName
+        |
+        <a href="/Patient">Main Dashboard</a>
+        |
+        <a href="/Auth/Logout">Logout</a>
+    </p>
+
+    @if (TempData["Message"] != null)
+    {
+        <p>@TempData["Message"]</p>
+    }
+
+    <section>
+        <h2>My Profile - Autosave</h2>
+
+        <form id="profile"
+              method="post"
+              action="/PatientRecords/SaveProfile">
+
+            @Html.AntiForgeryToken()
+
+            <label>
+                Contact
+                <input type="text"
+                       name="contact"
+                       value="@(profile?.Contact)" />
+            </label>
+
+            <label>
+                Address
+                <input type="text"
+                       name="address"
+                       value="@(profile?.Address)" />
+            </label>
+
+            <label>
+                HMO
+                <input type="text"
+                       name="hmo"
+                       value="@(profile?.Hmo)" />
+            </label>
+
+            <span id="saveState" class="hint">
+                Changes save automatically.
+            </span>
+        </form>
+    </section>
+
+    <section>
+        <h2>Book Appointment</h2>
+
+        @if (doctors.Any())
+        {
+            <form method="post"
+                  action="/PatientRecords/Book">
+
+                @Html.AntiForgeryToken()
+
+                <select name="doctorId" required>
+                    <option value="">Select Doctor</option>
+
+                    @foreach (var d in doctors)
+                    {
+                        <option value="@d.Id">
+                            @d.Name - @d.Specialty (@d.Branch)
+                        </option>
+                    }
+                </select>
+
+                <input type="datetime-local"
+                       name="schedule"
+                       required />
+
+                <input type="text"
+                       name="service"
+                       placeholder="Service"
+                       required />
+
+                <button type="submit">
+                    Request Booking
+                </button>
+            </form>
+        }
+        else
+        {
+            <p class="hint">
+                No doctors available yet.
+                Please check again later.
+            </p>
+        }
+
+        <p class="hint">
+            Only active doctors added by the Owner
+            are available for booking.
+        </p>
+    </section>
+
+    <section>
+        <h2>My Appointments</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var a in appointments)
+                    {
+                        <tr>
+                            <td>@a.Doctor</td>
+                            <td>@a.Schedule</td>
+                            <td>@a.Status</td>
+                            <td>@a.PaymentStatus</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                                <form method="post"
+                                      action="/PatientRecords/UploadProof"
+                                      enctype="multipart/form-data">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="appointmentId"
+                                           value="@a.Id" />
+
+                                    <input type="text"
+                                           name="referenceNo"
+                                           placeholder="Payment Reference" />
+
+                                    <input type="file"
+                                           name="proof"
+                                           accept="image/*,application/pdf"
+                                           required />
+
+                                    <button type="submit">
+                                        Submit Payment Proof
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!appointments.Any())
+        {
+            <p class="hint">No appointments found.</p>
+        }
+    </section>
+
+    <section>
+        <h2>Receipts</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var x in invoices)
+                    {
+                        <tr>
+                            <td>@x.Service</td>
+                            <td>PHP @x.Amount.ToString("N2")</td>
+                            <td>@x.Status</td>
+
+                            <td>
+                                @if (x.Status == "Paid")
+                                {
+                                    <a target="_blank"
+                                       rel="noopener noreferrer"
+                                       href="@Url.Action("PrintReceipt", "PatientRecords", new { id = x.Id })">
+                                        Print Receipt
+                                    </a>
+
+                                    <span> | </span>
+
+                                    <a href="@Url.Action("DownloadReceiptPdf", "PatientRecords", new { id = x.Id })">
+                                        Download PDF
+                                    </a>
+
+                                }
+                                else
+                                {
+                                    <span class="hint">
+                                        Not yet paid
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!invoices.Any())
+        {
+            <p class="hint">No invoices available.</p>
+        }
+    </section>
+
+    <section>
+        <h2>Consultations and Prescriptions</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var x in consults)
+                    {
+                        <tr>
+                            <td>
+                                @x.Date.ToShortDateString()
+                            </td>
+
+                            <td>@x.Doctor</td>
+                            <td>@x.Diagnosis</td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(x.Prescription) && releases.Any(r => r.ConsultationId == x.Id))
+                                {
+                                    var rx = releases.FirstOrDefault(r => r.ConsultationId == x.Id);
+                                    <a target="_blank"
+                                       rel="noopener noreferrer"
+                                       href="@Url.Action("PrintPrescription", "PatientRecords", new { id = x.Id })">
+                                        Printable Record
+                                    </a>
+
+                                    <span> | </span>
+
+                                    <a href="@Url.Action("DownloadPrescriptionPdf", "PatientRecords", new { id = x.Id })">
+                                        Download PDF
+                                    </a>
+                                    @if (rx != null)
+                                    {
+                                        <div class="hint">Estimated medicines: ₱@rx.EstimatedMedicineTotal.ToString("N2") (not a bill)</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>
+                                        Not yet released / No prescription issued
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!consults.Any())
+        {
+            <p class="hint">
+                No consultation records available.
+            </p>
+        }
+
+        <p class="hint">
+            Demonstration records are not valid prescriptions
+            without authorization from a licensed physician.
+        </p>
+    </section>
+
+    <section>
+        <h2>Released Laboratory Results</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Result</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var x in labs)
+                    {
+                        <tr>
+                            <td>@x.Test</td>
+                            <td>@x.Result</td>
+                            <td>@x.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!labs.Any())
+        {
+            <p class="hint">
+                No released laboratory results available.
+            </p>
+        }
+    </section>
+
+    <section>
+        <h2>Online GCash / Card Checkout</h2>
+
+        <p class="hint">
+            Choose an unpaid invoice below.
+            You will be redirected to the hosted payment provider.
+            Payment is confirmed only after provider verification.
+        </p>
+
+        @foreach (var inv in unpaidInvoices)
+        {
+            <form method="post"
+                  action="/PatientRecords/StartOnlinePayment"
+                  style="margin: 10px 0;">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="invoiceId"
+                       value="@inv.Id" />
+
+                <span>
+                    Invoice #@inv.Id -
+                    @inv.Service -
+                    PHP @((inv.Amount - inv.Discount).ToString("N2"))
+                </span>
+
+                <button type="submit">
+                    Pay with GCash / Card
+                </button>
+            </form>
+        }
+
+        @if (!unpaidInvoices.Any())
+        {
+            <p class="hint">
+                No unpaid invoices available.
+            </p>
+        }
+    </section>
+
+    <script>
+            const profileForm = document.getElementById("profile");
+            const saveState = document.getElementById("saveState");
+
+            let pendingSave;
+
+            if (profileForm && saveState) {
+                profileForm.addEventListener("input", function () {
+                    saveState.textContent = "Saving...";
+
+                    clearTimeout(pendingSave);
+
+                    pendingSave = setTimeout(async function () {
+                        try {
+                            const response = await fetch(
+                                profileForm.action,
+                                {
+                                    method: "POST",
+                                    body: new FormData(profileForm),
+                                    credentials: "same-origin"
+                                }
+                            );
+
+                            if (!response.ok) {
+                                throw new Error("Save failed");
+                            }
+
+                            saveState.textContent = "Saved";
+                        }
+                        catch (error) {
+                            saveState.textContent =
+                                "Save failed. Please try again.";
+
+                            console.error(error);
+                        }
+                    }, 700);
+                });
+            }
+    </script>
+
+<section style="margin:25px;padding:22px;border:1px solid #ebd5df;border-radius:12px;background:white"><h2>Released Prescription Files & History</h2><p>Only documents released for your account appear here.</p>@foreach(var d in signedDocuments){<p><strong>Consultation #@d.ConsultationId</strong> — @d.UploadedAtUtc.ToString("yyyy-MM-dd") <a href="/PrescriptionDesk/Download/@d.Id">Download physician-approved file</a></p>}@if(!signedDocuments.Any()){<p>No uploaded signed prescription files released yet. Check the consultation prescriptions above for available prescription records.</p>}</section>
+
+<section style="margin:25px;padding:22px;border:1px solid #ebd5df;border-radius:12px;background:white">
+  <h2>My Medical Activity History</h2>
+  <p>Saved appointments and consultation records for your account. Past records remain available even when a doctor is no longer listed publicly.</p>
+  @if(!appointments.Any() && !consults.Any())
+  {
+    <p>No appointment or consultation history recorded yet.</p>
+  }
+  @foreach(var appointment in appointments.OrderByDescending(x=>x.Schedule))
+  {
+    <div style="padding:12px 0;border-bottom:1px solid #f1e2e8">
+      <strong>Appointment — @appointment.Patient</strong>
+      <div>@appointment.Schedule.ToString("MMMM dd, yyyy h:mm tt")</div>
+      <div>Doctor: @appointment.Doctor | Service: @appointment.Service</div>
+      <div>Status: @appointment.Status</div>
+    </div>
+  }
+  @foreach(var consultation in consults.OrderByDescending(x=>x.Date))
+  {
+    <div style="padding:12px 0;border-bottom:1px solid #f1e2e8">
+      <strong>Consultation — @consultation.Patient</strong>
+      <div>@consultation.Date.ToString("MMMM dd, yyyy h:mm tt")</div>
+      <div>Doctor: @consultation.Doctor</div>
+      <div>Diagnosis: @(string.IsNullOrWhiteSpace(consultation.Diagnosis) ? "Not recorded" : consultation.Diagnosis)</div>
+      @if(releases.Any(r=>r.ConsultationId==consultation.Id))
+      {
+        <div>Prescription: Released</div>
+        <a href="/PatientRecords/DownloadPrescriptionPdf/@consultation.Id">Download released prescription</a>
+      }
+      else { <div>Prescription: No released prescription</div> }
+    </div>
+  }
+</section>
+</body>
+</html>

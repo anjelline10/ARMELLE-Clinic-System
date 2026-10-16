@@ -1,0 +1,623 @@
+
+@model List<Armelle.Models.Doctor>
+
+@{
+    ViewData["Title"] = "Doctor Management";
+
+    var isOwner =
+        Context.Session.GetString("Role") == "Owner";
+}
+
+<style>
+    .doctor-page {
+        padding: 24px;
+        max-width: 1300px;
+        margin: auto;
+    }
+
+    .doctor-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .doctor-heading h1 {
+        margin: 0;
+        font-size: 30px;
+        color: #70334b;
+    }
+
+    .doctor-heading p {
+        color: #806d76;
+    }
+
+    .doctor-form-card {
+        background: #fff;
+        border: 1px solid #ead7df;
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 25px;
+    }
+
+    .doctor-form-card summary {
+        cursor: pointer;
+        color: #873852;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .doctor-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 22px;
+    }
+
+    .doctor-form label {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .doctor-form input,
+    .doctor-form textarea,
+    .doctor-form select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddcbd3;
+        border-radius: 9px;
+        font: inherit;
+    }
+
+    .wide {
+        grid-column: 1 / -1;
+    }
+
+    .doctor-btn {
+        background: #873852;
+        color: white;
+        border: none;
+        border-radius: 9px;
+        padding: 12px 18px;
+        cursor: pointer;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .doctor-btn:hover {
+        background: #6d2941;
+    }
+
+    .doctor-btn-danger {
+        background: #b23b4b;
+    }
+
+    .doctor-btn-muted {
+        background: #eee0e6;
+        color: #693247;
+    }
+
+    .doctor-list {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fill,
+            minmax(270px, 1fr)
+        );
+        gap: 20px;
+    }
+
+    .doctor-card {
+        background: white;
+        border: 1px solid #ead7df;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .doctor-card.inactive {
+        opacity: .7;
+    }
+
+    .doctor-image {
+        height: 220px;
+        background: #f4e7ed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .doctor-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .doctor-image span {
+        font-size: 55px;
+        color: #a27588;
+    }
+
+    .doctor-info {
+        padding: 20px;
+    }
+
+    .doctor-info h3 {
+        margin: 8px 0;
+        color: #70334b;
+    }
+
+    .doctor-info p {
+        margin: 7px 0;
+        color: #78646e;
+        font-size: 14px;
+    }
+
+    .doctor-specialty {
+        color: #a04a69;
+        font-weight: 700;
+    }
+
+    .doctor-price {
+        font-size: 18px;
+        font-weight: 800;
+        color: #70334b;
+    }
+
+    .doctor-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .doctor-actions form {
+        margin: 0;
+    }
+
+    .empty-doctors {
+        text-align: center;
+        padding: 65px 20px;
+        border: 2px dashed #e3cbd5;
+        border-radius: 18px;
+        background: #fffafd;
+    }
+
+    .empty-doctors h2 {
+        color: #873852;
+    }
+
+    .notice {
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        background: #f8edf2;
+        color: #70334b;
+    }
+
+    .edit-drawer {
+        margin-top: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    .edit-drawer summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: #873852;
+    }
+
+    .doctor-bulk-bar { display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+        padding:14px 18px; margin:12px 0 20px; border:1px solid #ead7df;
+        background:#fff; border-radius:12px; }
+    .doctor-select-all, .doctor-select-item { display:flex; align-items:center;
+        gap:9px; cursor:pointer; font-weight:600; }
+    .doctor-select-item { padding:12px 18px 0; color:#873852; }
+    .doctor-select-all input, .doctor-select-item input { width:18px; height:18px; accent-color:#873852; }
+    #delete-selected-doctors:disabled { opacity:.5; cursor:not-allowed; }
+    @@media (max-width: 650px) {
+        .doctor-form {
+            grid-template-columns: 1fr;
+        }
+
+        .doctor-page {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="doctor-page">
+
+    <div class="doctor-heading">
+        <div>
+            <h1>Doctor Management</h1>
+            <p>
+                Manage real doctor profiles, schedules,
+                specialties, and consultation fees.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="notice">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="notice">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (isOwner)
+    {
+        <details class="doctor-form-card">
+            <summary>+ Add New Doctor</summary>
+
+            <form method="post"
+                  action="@Url.Action("AddDoctor", "Clinic")"
+                  enctype="multipart/form-data"
+                  class="doctor-form">
+
+                @Html.AntiForgeryToken()
+
+                <label>
+                    Doctor Photo
+                    <input type="file"
+                           name="photo"
+                           accept="image/jpeg,image/png,image/webp" />
+                </label>
+
+                <label>
+                    Full Name
+                    <input name="Name"
+                           placeholder="Doctor's full name"
+                           required />
+                </label>
+
+                <label>
+                    Credentials
+                    <input name="Credentials"
+                           placeholder="MD, FPCP, etc." />
+                </label>
+
+                <label>
+                    Specialty
+                    <input name="Specialty"
+                           placeholder="Medical specialty"
+                           required />
+                </label>
+
+                <label>
+                    Clinic Branch
+                    <input name="Branch"
+                           placeholder="Clinic branch"
+                           required />
+                </label>
+
+                <label>
+                    Room
+                    <input name="Room"
+                           placeholder="Room number" />
+                </label>
+
+                <label>
+                    Available Schedule
+                    <input name="Schedule"
+                           placeholder="Days and consultation hours"
+                           required />
+                </label>
+
+                <label>
+                    Consultation Fee (PHP)
+                    <input type="number"
+                           name="ConsultationFee"
+                           min="0"
+                           step="0.01"
+                           required />
+                </label>
+
+                <label>
+                    Daily Patient Limit
+                    <input type="number"
+                           name="DailyLimit"
+                           min="1"
+                           value="12"
+                           required />
+                </label>
+
+                <label>
+                    Availability Status
+                    <select name="Status">
+                        <option value="Available">
+                            Available
+                        </option>
+                        <option value="On Leave">
+                            On Leave
+                        </option>
+                        <option value="Unavailable">
+                            Unavailable
+                        </option>
+                    </select>
+                </label>
+
+                <label class="wide">
+                    Doctor Biography
+                    <textarea name="Bio"
+                              rows="4"
+                              placeholder="Professional background"></textarea>
+                </label>
+
+                <input type="hidden"
+                       name="IsActive"
+                       value="true" />
+
+                <button type="submit"
+                        class="doctor-btn wide">
+                    Save Doctor Profile
+                </button>
+            </form>
+        </details>
+    }
+
+    <h2>Registered Doctors (@Model.Count)</h2>
+
+    @if (isOwner && Model.Any())
+    {
+        <form id="bulk-doctor-delete" method="post"
+              action="@Url.Action("DeleteSelectedDoctors", "Clinic")">
+            @Html.AntiForgeryToken()
+        </form>
+        <div class="doctor-bulk-bar">
+            <label class="doctor-select-all">
+                <input type="checkbox" id="select-all-doctors" />
+                Select All
+            </label>
+            <span id="selected-doctor-count" aria-live="polite">0 selected</span>
+            <button type="submit" form="bulk-doctor-delete"
+                    id="delete-selected-doctors"
+                    class="doctor-btn doctor-btn-danger" disabled>
+                Remove Selected
+            </button>
+        </div>
+    }
+
+
+    @if (!Model.Any())
+    {
+        <div class="empty-doctors">
+            <h2>No Doctors Added Yet</h2>
+            <p>
+                Doctor profiles will appear here after
+                an authorized Owner adds them.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="doctor-list">
+
+            @foreach (var doctor in Model)
+            {
+                <article class="doctor-card @(doctor.IsActive ? "" : "inactive")">
+                    @if (isOwner)
+                    {
+                        <label class="doctor-select-item">
+                            <input type="checkbox" class="doctor-select-checkbox"
+                                   name="selectedIds" value="@doctor.Id"
+                                   form="bulk-doctor-delete" />
+                            Select
+                        </label>
+                    }
+
+                    <div class="doctor-image">
+                        @if (!string.IsNullOrWhiteSpace(doctor.PhotoPath))
+                        {
+                            <img src="@doctor.PhotoPath"
+                                 alt="@doctor.Name" />
+                        }
+                        else
+                        {
+                            <span>Dr</span>
+                        }
+                    </div>
+
+                    <div class="doctor-info">
+
+                        <span class="doctor-specialty">
+                            @doctor.Specialty
+                        </span>
+
+                        <h3>@doctor.Name</h3>
+
+                        <p>@doctor.Credentials</p>
+
+                        <div class="doctor-price">
+                            ₱@doctor.ConsultationFee.ToString("N2")
+                        </div>
+
+                        <p>Branch: @doctor.Branch</p>
+                        <p>Room: @doctor.Room</p>
+                        <p>Schedule: @doctor.Schedule</p>
+                        <p>Status: @(doctor.IsActive ? doctor.Status : "Inactive")</p>
+
+                        @if (isOwner)
+                        {
+                            <div class="doctor-actions">
+
+                                <a class="doctor-btn"
+                                   href="@Url.Action("EditDoctor", "Clinic", new { id = doctor.Id })">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="@Url.Action("ToggleDoctor", "Clinic")">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@doctor.Id" />
+
+                                    <button type="submit"
+                                            class="doctor-btn doctor-btn-muted">
+                                        @(doctor.IsActive ? "Deactivate" : "Reactivate")
+                                    </button>
+                                </form>
+
+                                <form method="post"
+                                      action="@Url.Action("DeleteDoctor", "Clinic")">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@doctor.Id" />
+
+                                    <button type="submit"
+                                            class="doctor-btn doctor-btn-danger">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+
+                            <details class="edit-drawer">
+                                <summary>Quick Edit / Change Photo</summary>
+
+                                <form method="post"
+                                      action="@Url.Action("UpdateDoctor", "Clinic")"
+                                      enctype="multipart/form-data"
+                                      class="doctor-form">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="Id"
+                                           value="@doctor.Id" />
+
+                                    <label>
+                                        Change Photo
+                                        <input type="file"
+                                               name="photo"
+                                               accept="image/jpeg,image/png,image/webp" />
+                                    </label>
+
+                                    <label>
+                                        Full Name
+                                        <input name="Name"
+                                               value="@doctor.Name"
+                                               required />
+                                    </label>
+
+                                    <label>
+                                        Credentials
+                                        <input name="Credentials"
+                                               value="@doctor.Credentials" />
+                                    </label>
+
+                                    <label>
+                                        Specialty
+                                        <input name="Specialty"
+                                               value="@doctor.Specialty"
+                                               required />
+                                    </label>
+
+                                    <label>
+                                        Branch
+                                        <input name="Branch"
+                                               value="@doctor.Branch"
+                                               required />
+                                    </label>
+
+                                    <label>
+                                        Room
+                                        <input name="Room"
+                                               value="@doctor.Room" />
+                                    </label>
+
+                                    <label>
+                                        Schedule
+                                        <input name="Schedule"
+                                               value="@doctor.Schedule"
+                                               required />
+                                    </label>
+
+                                    <label>
+                                        Consultation Fee
+                                        <input type="number"
+                                               name="ConsultationFee"
+                                               step="0.01"
+                                               min="0"
+                                               value="@doctor.ConsultationFee.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                                    </label>
+
+                                    <label>
+                                        Daily Limit
+                                        <input type="number"
+                                               name="DailyLimit"
+                                               min="1"
+                                               value="@doctor.DailyLimit" />
+                                    </label>
+
+                                    <label>
+                                        Status
+                                        <input name="Status"
+                                               value="@doctor.Status" />
+                                    </label>
+
+                                    <label class="wide">
+                                        Biography
+                                        <textarea name="Bio"
+                                                  rows="3">@doctor.Bio</textarea>
+                                    </label>
+
+                                    <input type="hidden"
+                                           name="IsActive"
+                                           value="@doctor.IsActive.ToString().ToLowerInvariant()" />
+
+                                    <button type="submit"
+                                            class="doctor-btn wide">
+                                        Update Doctor
+                                    </button>
+                                </form>
+                            </details>
+                        }
+
+                    </div>
+                </article>
+            }
+
+        </div>
+    }
+
+</div>
+
+<script>
+(() => {
+    const all = document.getElementById('select-all-doctors');
+    const boxes = Array.from(document.querySelectorAll('.doctor-select-checkbox'));
+    const count = document.getElementById('selected-doctor-count');
+    const remove = document.getElementById('delete-selected-doctors');
+    if (!all || !count || !remove) return;
+    function refresh() {
+        const selected = boxes.filter(x => x.checked).length;
+        count.textContent = selected + ' selected';
+        remove.disabled = selected === 0;
+        all.checked = boxes.length > 0 && selected === boxes.length;
+        all.indeterminate = selected > 0 && selected < boxes.length;
+    }
+    all.addEventListener('change', () => {
+        boxes.forEach(x => x.checked = all.checked);
+        refresh();
+    });
+    boxes.forEach(x => x.addEventListener('change', refresh));
+    refresh();
+})();
+</script>

@@ -1,0 +1,271 @@
+@using Armelle.Controllers
+@using System.Collections.Generic
+
+@{
+    ViewData["Title"] = "Owner Settings";
+
+    string ownerName =
+        Convert.ToString(ViewBag.OwnerName) ?? "Owner";
+
+    string ownerTitle =
+        Convert.ToString(ViewBag.OwnerTitle) ?? "Owner";
+
+    string ownerPhoto =
+        Convert.ToString(ViewBag.OwnerPhoto) ?? "";
+
+    var otherOwners =
+        ViewBag.OtherOwners
+            as List<HomeController.OwnerProfileDisplay>
+        ?? new List<HomeController.OwnerProfileDisplay>();
+}
+
+<style>
+    .owner-settings-page {
+        max-width: 1100px;
+        margin: auto;
+        padding: 24px;
+    }
+
+        .owner-settings-page h1,
+        .owner-settings-page h2 {
+            color: #78344e;
+        }
+
+    .owner-profile-card,
+    .other-owner-card {
+        background: white;
+        border: 1px solid #ead6df;
+        border-radius: 18px;
+        padding: 24px;
+    }
+
+    .owner-profile-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .owner-profile-photo,
+    .other-owner-photo {
+        width: 105px;
+        height: 105px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #f0dce5;
+    }
+
+    .owner-photo-placeholder {
+        width: 105px;
+        height: 105px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #f0dce5;
+        color: #873852;
+        font-size: 35px;
+        font-weight: 700;
+    }
+
+    .owner-profile-info h2 {
+        margin: 0 0 8px;
+    }
+
+    .owner-profile-info p {
+        margin: 0;
+        color: #806b75;
+    }
+
+    .owner-form {
+        display: grid;
+        gap: 16px;
+        max-width: 600px;
+    }
+
+        .owner-form label {
+            display: grid;
+            gap: 7px;
+            font-weight: 600;
+        }
+
+        .owner-form input {
+            padding: 12px;
+            border: 1px solid #dfcbd4;
+            border-radius: 9px;
+            width: 100%;
+        }
+
+    .owner-save-button {
+        background: #873852;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .other-owners-grid {
+        display: grid;
+        grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) );
+        gap: 18px;
+    }
+
+    .other-owner-card {
+        text-align: center;
+    }
+
+        .other-owner-card img,
+        .other-owner-card .owner-photo-placeholder {
+            margin: 0 auto 15px;
+        }
+
+        .other-owner-card h3 {
+            margin: 8px 0;
+            color: #78344e;
+        }
+
+        .other-owner-card p {
+            color: #806b75;
+        }
+
+    .owner-message {
+        padding: 14px;
+        margin: 15px 0;
+        background: #f8edf2;
+        border-radius: 9px;
+    }
+
+    @@media (max-width: 600px) {
+        .owner-profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="owner-settings-page">
+
+    <h1>Owner Settings</h1>
+
+    <p>
+        Manage your personal Owner profile
+        and view the other ARMELLE owners.
+    </p>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="owner-message">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="owner-message">
+            @TempData["Error"]
+        </div>
+    }
+
+    <h2>My Profile</h2>
+
+    <div class="owner-profile-card">
+
+        <div class="owner-profile-header">
+
+            @if (!string.IsNullOrWhiteSpace(ownerPhoto))
+            {
+                <img src="@ownerPhoto"
+                     class="owner-profile-photo"
+                     alt="My Profile Picture" />
+            }
+            else
+            {
+                <div class="owner-photo-placeholder">
+                    @(ownerName.Length > 0
+                        ? ownerName.Substring(0, 1).ToUpper()
+                        : "O")
+                </div>
+            }
+
+            <div class="owner-profile-info">
+                <h2>@ownerName</h2>
+                <p>@ownerTitle</p>
+            </div>
+
+        </div>
+
+        <h3>Edit My Profile</h3>
+
+        <form method="post"
+              action="@Url.Action("SaveOwnerProfile", "Home")"
+              enctype="multipart/form-data"
+              class="owner-form">
+
+            @Html.AntiForgeryToken()
+
+            <label>
+                Full Name
+                <input type="text"
+                       name="displayName"
+                       value="@ownerName"
+                       maxlength="120"
+                       required />
+            </label>
+
+            <label>
+                Position
+                <input type="text"
+                       name="ownerTitle"
+                       value="@ownerTitle"
+                       maxlength="160"
+                       required />
+            </label>
+
+            <label>
+                Change Profile Picture
+                <input type="file"
+                       name="photo"
+                       accept="image/jpeg,image/png,image/webp" />
+            </label>
+
+            <button type="submit"
+                    class="owner-save-button">
+                Save My Profile
+            </button>
+
+        </form>
+    </div>
+
+    <h2>Other Owners</h2>
+
+    <div class="other-owners-grid">
+
+        @foreach (var owner in otherOwners)
+        {
+            <div class="other-owner-card">
+
+                @if (!string.IsNullOrWhiteSpace(owner.PhotoPath))
+                {
+                    <img src="@owner.PhotoPath"
+                         class="other-owner-photo"
+                         alt="@owner.Name" />
+                }
+                else
+                {
+                    <div class="owner-photo-placeholder">
+                        @(owner.Name.Length > 0
+                            ? owner.Name.Substring(0, 1).ToUpper()
+                            : "O")
+                    </div>
+                }
+
+                <h3>@owner.Name</h3>
+                <p>@owner.Title</p>
+
+            </div>
+        }
+
+    </div>
+
+</div>

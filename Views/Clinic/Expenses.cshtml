@@ -1,0 +1,3 @@
+@model List<Expense>
+
+@{ViewData["Title"]="Operating Expenses";}<div class="panel"><h3>Add Record</h3><form class="form" method="post" action="/Clinic/AddExpense">@Html.AntiForgeryToken()<input name="Category" placeholder="Category" required><input name="Description" placeholder="Description"><input name="Amount" type="number" step=".01" placeholder="Amount"><input name="Date" type="date"><button class="primary">Save</button></form></div><div class="panel"><table><tr><th>Category</th><th>Description</th><th>Amount</th><th>Date</th></tr>@foreach(var x in Model){<tr><td>@x.Category</td><td>@x.Description</td><td>₱@x.Amount</td><td>@x.Date.ToShortDateString()</td></tr>}</table></div>

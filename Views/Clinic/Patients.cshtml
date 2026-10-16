@@ -1,0 +1,55 @@
+@model List<Armelle.Models.Patient>
+<div style="padding:12px"><a style="background:#a94d6b;color:white;padding:10px 15px;border-radius:8px;text-decoration:none" href="/PrescriptionDesk">Open Owner Prescription Desk</a></div>
+@{ ViewData["Title"] = "Patient Management"; var branch = ViewBag.SelectedBranch as string ?? ""; }
+<div class="panel">
+ <h2>Patient Management</h2>
+ @if(TempData["PatientNotice"] != null){<p role="status">@TempData["PatientNotice"]</p>}
+ <form method="get" action="/Clinic/Patients" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <select name="branch"><option value="">All branches</option>
+  @foreach(var b in new[]{"North QC","Central San Juan","South Makati"}){
+   if(branch==b){<option selected value="@b">@b</option>}else{<option value="@b">@b</option>}
+  }
+  </select>
+  <button type="submit">Filter</button>
+  <a href="/Clinic/ExportPatientsCsv?branch=@Uri.EscapeDataString(branch)">Export CSV</a>
+  <button type="button" onclick="window.print()">Print</button>
+ </form>
+ <p>Showing @Model.Count patient(s). Select All applies to the currently displayed branch.</p>
+</div>
+<div class="panel">
+ <h3>Add Patient</h3>
+ <form class="form" method="post" action="/Clinic/AddPatient">
+  @Html.AntiForgeryToken()
+  <input name="Name" placeholder="Full name" required />
+  <select name="Branch"><option>North QC</option><option>Central San Juan</option><option>South Makati</option></select>
+  <input name="BirthDate" type="date" /><input name="Sex" placeholder="Sex" />
+  <input name="Contact" placeholder="Contact" /><input name="Address" placeholder="Address" />
+  <input name="Hmo" placeholder="HMO" />
+  <button type="submit" class="primary">Save Patient</button>
+ </form>
+</div>
+<div class="panel">
+ <h3>Patient Records</h3>
+ <form method="post" action="/Clinic/DeleteSelectedPatients">
+  @Html.AntiForgeryToken()
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+   <label><input type="checkbox" id="selectAllPatients" onchange="document.querySelectorAll('.patient-check').forEach(c=>c.checked=this.checked)" /> Select All</label>
+   <button type="submit" class="primary">Remove Selected</button>
+  </div>
+  <div style="overflow-x:auto">
+   <table>
+    <thead><tr><th>Select</th><th>ID</th><th>Name</th><th>Branch</th><th>Birth Date</th><th>Sex</th><th>Contact</th><th>HMO</th><th>Actions</th></tr></thead>
+    <tbody>
+    @foreach(var x in Model){
+     <tr>
+      <td><input class="patient-check" type="checkbox" name="ids" value="@x.Id" aria-label="Select @x.Name" /></td>
+      <td>@x.Id</td><td>@x.Name</td><td>@x.Branch</td><td>@x.BirthDate?.ToString("yyyy-MM-dd")</td>
+      <td>@x.Sex</td><td>@x.Contact</td><td>@x.Hmo</td>
+      <td><a href="/Clinic/EditPatient/@x.Id">Edit</a></td>
+     </tr>
+    }
+    </tbody>
+   </table>
+  </div>
+ </form>
+</div>

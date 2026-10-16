@@ -1,0 +1,28 @@
+@model Armelle.Models.TeamDirectoryVm
+@{ Layout="_PublicLayout"; ViewData["Title"]="Our Medical Team"; }
+<style>
+.armelle-team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:20px;padding:24px 0 60px}
+.armelle-team-card{background:#fff;border:1px solid #f4d9e5;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px #ae466212}
+.armelle-team-card img{width:100%;height:230px;object-fit:cover;display:block;background:#fcebf2}
+.armelle-team-placeholder{height:230px;display:grid;place-items:center;background:#fcebf2;color:#9c2c56;font-size:48px}
+.armelle-team-info{padding:18px}.armelle-team-info h3{margin:6px 0;color:#93254d}.armelle-team-info small{color:#b73f73}.armelle-team-info p{margin:5px 0;color:#5b5260}
+.armelle-team-wrap{max-width:1200px;margin:auto;padding:0 22px}
+</style>
+<section class="pagehero"><p class="eyebrow">MEET OUR TEAM</p><h1>ARMELLE Healthcare Team</h1><p>Doctor and employee profiles maintained by the clinic Owner.</p></section>
+<div class="armelle-team-wrap">
+<h2>Our Doctors</h2>
+<div class="armelle-team-grid">
+@foreach(var d in Model.Doctors){<article class="armelle-team-card">
+@if(!string.IsNullOrWhiteSpace(d.PhotoPath)){<img src="@Url.Content(d.PhotoPath)" alt="Photo of @d.Name" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><div class="armelle-team-placeholder" style="display:none">✚</div>}
+else{<div class="armelle-team-placeholder">✚</div>}
+<div class="armelle-team-info"><small>@d.Specialty</small><h3>@d.Name</h3><p>@d.Branch</p><p>@d.Schedule</p></div></article>}
+@if(!Model.Doctors.Any()){<p>No doctor profiles available yet.</p>}
+</div>
+<h2>Our Staff</h2>
+<div class="armelle-team-grid">
+@foreach(var e in Model.Employees){<article class="armelle-team-card">
+@if(!string.IsNullOrWhiteSpace(e.PhotoPath)){<img src="@Url.Content(e.PhotoPath)" alt="Photo of @e.Name" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><div class="armelle-team-placeholder" style="display:none">✚</div>}
+else{<div class="armelle-team-placeholder">✚</div>}
+<div class="armelle-team-info"><small>@e.Department</small><h3>@e.Name</h3><p>@e.Role</p><p>@e.Branch</p></div></article>}
+@if(!Model.Employees.Any()){<p>No employee profiles available yet.</p>}
+</div></div>

@@ -1,0 +1,37 @@
+@model List<Employee>
+@{ViewData["Title"]="Employees & Workforce Management";var role=Context.Session.GetString("Role")??"";var canManage=role.Contains("Owner",StringComparison.OrdinalIgnoreCase)||role.Contains("Admin",StringComparison.OrdinalIgnoreCase)||role.Contains("Root",StringComparison.OrdinalIgnoreCase);}
+@if(TempData["Success"]!=null){<div class="panel" style="margin-bottom:16px"><b>@TempData["Success"]</b></div>}@if(TempData["Error"]!=null){<div class="panel" style="margin-bottom:16px"><b>@TempData["Error"]</b></div>}<div class="owner-head"><div><p class="eyebrow">WORKFORCE DIRECTORY</p><h1>People who make ARMELLE work.</h1><p>Add, edit, upload portraits, manage access, and activate or deactivate staff. Changes are saved in MySQL.</p></div><div class="owner-badge">@role ACCESS</div></div>
+@if(canManage){<details class="owner-editor" open><summary>＋ Add New Employee / Staff</summary><form class="owner-form" method="post" action="/Clinic/AddEmployee" enctype="multipart/form-data">@Html.AntiForgeryToken()<label>Profile Photo<input type="file" name="photo" accept="image/png,image/jpeg,image/webp"></label><label>Full Name<input name="Name" required></label><label>Role / Position<input name="Role" required></label><label>Department<input name="Department"></label><label>Branch<input name="Branch"></label><label>Shift<input name="Shift" value="8:00 AM - 5:00 PM"></label><label>Rate<input name="Rate" type="number" step=".01"></label><label>Email<input name="Email" type="email"></label><label>Contact<input name="Contact"></label><label class="wide">Short Bio<textarea name="Bio" rows="3"></textarea></label><button class="primary wide">Save Employee</button></form></details>}
+
+@if(canManage)
+{
+ <form id="staffBulkForm" method="post" action="/Clinic/DeleteSelectedEmployees" style="margin:18px 0;padding:14px;border:1px solid #ddd;border-radius:12px">
+  @Html.AntiForgeryToken()
+  <label style="display:inline-flex;align-items:center;gap:8px;margin-right:18px">
+   <input type="checkbox" id="staffSelectAll" /> Select All Staff
+  </label>
+  <span id="staffSelectedCount">0 selected</span>
+  <button type="submit" class="soft danger" id="staffBulkRemove" disabled style="margin-left:12px">Remove Selected</button>
+ </form>
+}
+<div class="owner-directory">@foreach(var x in Model){<article class="owner-person @(x.IsActive?"":"inactive")">@if(canManage){<label style="display:flex;align-items:center;gap:7px;margin:8px"><input type="checkbox" class="staff-select" name="selectedIds" value="@x.Id" form="staffBulkForm" /> Select</label>}<div class="owner-photo">@if(!string.IsNullOrWhiteSpace(x.PhotoPath)){<img src="@x.PhotoPath" alt="@x.Name">}else{<span>@(x.Name.Length>0?x.Name[0].ToString().ToUpper():"A")</span>}</div><div class="owner-person-info"><small>@x.Department</small><h3>@x.Name</h3><b>@x.Role</b><p>@x.Branch • @x.Shift</p><em>@(x.IsActive?"Active":"Inactive")</em></div>@if(canManage){<form method="post" action="/Clinic/DeleteEmployee" style="display:inline-block;margin:8px 0">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@x.Id" /><button type="submit" class="soft danger">Remove</button></form><a class="primary" href="/Clinic/EditEmployee?id=@x.Id" style="display:inline-flex;margin:8px 0">Edit Employee</a><details class="edit-drawer"><summary>Quick Edit / Upload</summary><form method="post" action="/Clinic/UpdateEmployee" enctype="multipart/form-data" class="owner-form compact">@Html.AntiForgeryToken()<input type="hidden" name="Id" value="@x.Id"><label>Change Photo<input type="file" name="photo" accept="image/png,image/jpeg,image/webp"></label><label>Name<input name="Name" value="@x.Name" required></label><label>Role<input name="Role" value="@x.Role"></label><label>Department<input name="Department" value="@x.Department"></label><label>Branch<input name="Branch" value="@x.Branch"></label><label>Shift<input name="Shift" value="@x.Shift"></label><label>Rate<input name="Rate" type="number" step=".01" value="@x.Rate"></label><label>Email<input name="Email" value="@x.Email"></label><label>Contact<input name="Contact" value="@x.Contact"></label><label>Reset Password<input name="newPassword" type="password" placeholder="Leave blank to keep"></label><label class="wide">Bio<textarea name="Bio" rows="2">@x.Bio</textarea></label><input type="hidden" name="IsActive" value="@x.IsActive.ToString().ToLower()"><button class="primary wide">Update Employee</button></form><form method="post" action="/Clinic/ToggleEmployee">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@x.Id"><button class="soft danger">@(x.IsActive?"Deactivate":"Reactivate")</button></form></details>}</article>}</div>
+
+<script>
+(function () {
+ const all = document.getElementById('staffSelectAll');
+ const boxes = Array.from(document.querySelectorAll('.staff-select'));
+ const count = document.getElementById('staffSelectedCount');
+ const remove = document.getElementById('staffBulkRemove');
+ if (!all) return;
+ function update() {
+  const selected = boxes.filter(x => x.checked).length;
+  count.textContent = selected + ' selected';
+  remove.disabled = selected === 0;
+  all.checked = boxes.length > 0 && selected === boxes.length;
+  all.indeterminate = selected > 0 && selected < boxes.length;
+ }
+ all.addEventListener('change', () => {boxes.forEach(x => x.checked = all.checked);update();});
+ boxes.forEach(x => x.addEventListener('change', update));
+ update();
+})();
+</script>

@@ -1,0 +1,38 @@
+@{ Layout = "_PublicLayout"; ViewData["Title"] = "Welcome | Complete Care"; }
+<div class="arm-home">
+  <section class="arm-hero">
+    <div class="arm-hero-copy">
+      <div class="arm-kicker"><span class="arm-dot"></span> YOUR HEALTH. OUR PRIORITY.</div>
+      <h1>Care that feels <em>personal.</em><br/>Quality you can <em>trust.</em></h1>
+      <p>Welcome to ARMELLE Multi-Specialty Center. Thoughtful healthcare, experienced medical professionals, and transparent prices—designed to make every visit feel easier.</p>
+      <div class="arm-hero-actions"><a class="arm-btn arm-btn-primary" href="/Public/Book">Book an Appointment <span>↗</span></a><a class="arm-btn arm-btn-light" href="/Public/Doctors">Find Your Doctor <span>→</span></a></div>
+      <div class="arm-hero-points"><span>✧ Patient-centered care</span><span>✧ Clear service pricing</span><span>✧ Multiple specialties</span></div>
+    </div>
+    <div class="arm-hero-photo" role="img" aria-label="ARMELLE clinic homepage picture">
+      @if (!string.IsNullOrEmpty((string?)ViewBag.HeroImage))
+      {
+        <img src="@ViewBag.HeroImage" alt="ARMELLE clinic" class="arm-owner-hero-image" />
+      }
+      else
+      {
+      <div class="arm-window"></div><div class="arm-wallmark"><span>✚</span><b>ARMELLE</b><small>MULTI-SPECIALTY CENTER</small></div><div class="arm-reception"><div class="arm-counterfront"></div></div><div class="arm-planter"></div>
+      }
+      <div class="arm-floating"><span class="arm-floating-icon">✚</span><span><b>Welcome to better care</b><small>A calm, comfortable clinic experience</small></span></div>
+      @if (ViewBag.OwnerCanEdit == true)
+      {
+        <form action="/Public/UploadHomepageHero" method="post" enctype="multipart/form-data" class="arm-hero-upload">
+          @Html.AntiForgeryToken()
+          <label for="armHeroFile">📷 Change Homepage Photo</label>
+          <input id="armHeroFile" type="file" name="photo" accept="image/png,image/jpeg,image/webp" required />
+          <button type="submit">Upload &amp; Publish</button>
+        </form>
+      }
+    </div>
+  </section>
+  <section style="padding:22px;text-align:center;background:#fff2f7"><strong>ARMELLE Discounts &amp; Promos</strong><p>Explore our latest published clinic offers.</p><a href="/Promotions/Public" style="color:#a94d6b;font-weight:bold">View Current Promos →</a></section>
+  <section class="arm-intro"><span>COMPASSIONATE CARE · MODERN FACILITIES · TRANSPARENT PRICES</span><h2>Everything you need, thoughtfully connected.</h2><p>From consultations and diagnostics to pharmacy and follow-up care, find your next step with confidence.</p></section>
+  <section class="arm-services"><div class="arm-section-top"><div><span class="arm-label">EXPLORE OUR CARE</span><h2>Care for every chapter of life.</h2></div><a href="/Public/Services">Explore all services & prices →</a></div><div class="arm-service-grid"><a href="/Public/Doctors"><span class="arm-service-icon">✚</span><h3>Medical Consultations</h3><p>Find physicians across a range of specialties and view their profiles.</p><strong>Find a Doctor →</strong></a><a href="/Public/Services?q=Laboratory"><span class="arm-service-icon">⌁</span><h3>Laboratory Services</h3><p>Explore available tests, preparation information, and listed fees.</p><strong>Explore Tests →</strong></a><a href="/Public/Services?q=Imaging"><span class="arm-service-icon">◎</span><h3>Diagnostics & Imaging</h3><p>Discover diagnostic services and branch-specific availability.</p><strong>View Diagnostics →</strong></a><a href="/Public/Services?q=Pharmacy"><span class="arm-service-icon">✧</span><h3>Pharmacy & Medicines</h3><p>Understand medicine prices and pharmacist-verified prescription care.</p><strong>Visit Pharmacy →</strong></a></div></section>
+  <section class="arm-price"><div><span class="arm-label">CARE WITHOUT THE GUESSWORK</span><h2>Clear prices.<br/><em>Confident choices.</em></h2><p>We believe patients deserve to understand costs before choosing care. Browse the currently configured fees for consultations, services, diagnostics, and pharmacy items.</p><a class="arm-btn arm-btn-primary" href="/Public/Services">View Services & Prices →</a></div><div class="arm-price-panel"><span class="arm-price-tag">PRICE TRANSPARENCY</span><h3>Know before you book</h3><div><span>Doctor consultation</span><b>See listed fee</b></div><div><span>Laboratory & diagnostics</span><b>See itemized fees</b></div><div><span>Pharmacy items</span><b>See unit prices</b></div><p>Prices shown on service pages are configured by authorized clinic staff; availability and final billing may vary.</p></div></section>
+  <section class="arm-experience"><div class="arm-section-top"><div><span class="arm-label">YOUR EXPERIENCE MATTERS</span><h2>Care worth sharing.</h2></div></div><div class="arm-review-grid"><div class="arm-review-main"><span>★★★★★</span><h3>Your voice helps us care better.</h3><p>Following eligible completed visits, patients can share verified ratings and feedback. Approved reviews can be featured here as they become available.</p><a href="/Public/Contact">Share your feedback →</a></div><div class="arm-review-side"><span>01 / LISTEN</span><h3>We welcome feedback.</h3><p>We value thoughtful comments about the patient experience.</p><span>02 / IMPROVE</span><h3>We keep improving.</h3><p>Feedback helps guide improvements in service and support.</p></div></div></section>
+  <section class="arm-bottom"><div><span class="arm-label">YOUR NEXT STEP STARTS HERE</span><h2>Feel cared for, from the first hello.</h2><p>Explore our branches, discover your care options, or ask ARMELLE for guidance.</p><div class="arm-hero-actions"><a class="arm-btn arm-btn-primary" href="/Public/Locations">Explore Our Branches →</a><a class="arm-btn arm-btn-light" href="/Public/Contact">Contact Us →</a></div></div><div class="arm-bottom-mark">✚<span>ARMELLE</span></div></section>
+</div>

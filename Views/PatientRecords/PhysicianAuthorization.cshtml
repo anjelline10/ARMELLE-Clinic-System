@@ -1,0 +1,37 @@
+@model IEnumerable<Armelle.Models.Consultation>
+@using Armelle.Models
+@{ ViewData["Title"]="Release Prescriptions";
+   var medicines=ViewBag.Medicines as IEnumerable<Medicine> ?? Enumerable.Empty<Medicine>();
+   var released=ViewBag.ReleasedIds as IEnumerable<int> ?? Enumerable.Empty<int>();
+}
+<h1>Physician-Approved Prescription Release</h1>
+<p>After independently verifying a licensed physician's approval, release the recorded prescription to the patient's private portal automatically. This is not an electronic physician signature or an email delivery service.</p>
+@if(TempData["Message"]!=null){<p>@TempData["Message"]</p>}
+@foreach(var c in Model){
+<section style="border:1px solid #ddd;padding:18px;margin:12px 0">
+<h3>Consultation #@c.Id — @c.Patient</h3>
+<p>Doctor: @c.Doctor | @c.Date.ToShortDateString()</p>
+<p><strong>Prescription recorded:</strong> @c.Prescription</p>
+@if(released.Contains(c.Id)){<p><strong>Released to patient portal</strong></p>}
+else {
+<form method="post" asp-controller="PatientRecords" asp-action="RecordPhysicianAuthorization">
+@Html.AntiForgeryToken()
+<input type="hidden" name="consultationId" value="@c.Id"/>
+<p><label>Approving physician <input name="physicianName" required /></label></p>
+<p><label>Physician license number <input name="licenseNumber" required /></label></p>
+<h4>Medicine price estimate (optional; from Pharmacy catalog)</h4>
+<p>Select only medicines actually included in the physician-approved prescription. Price × quantity is calculated on the server. Do not treat the estimate as an invoice.</p>
+@for(int i=0;i<5;i++){
+<div style="margin:8px 0">
+<select name="medicineIds"><option value="0">No medicine</option>
+@foreach(var m in medicines){<option value="@m.Id">@m.GenericName @m.Strength — ₱@m.Price.ToString("N2") / unit</option>}
+</select>
+<label>Qty <input name="quantities" type="number" value="0" min="0" max="1000" style="width:75px" /></label>
+</div>
+}
+<label><input type="checkbox" name="confirmed" value="true" required/> I have independently verified this prescription was approved by the named licensed physician and matches the recorded medicine details.</label>
+<p><button type="submit">Release to Patient Portal</button></p>
+</form>
+}
+</section>
+}

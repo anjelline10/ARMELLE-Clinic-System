@@ -1,0 +1,204 @@
+
+@model Armelle.Models.Invoice
+
+@{
+    Layout = null;
+    ViewData["Title"] = "ARMELLE Payment Receipt";
+
+    var totalAmount = Model.Amount - Model.Discount;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>ARMELLE | Payment Receipt</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 25px;
+            color: #333;
+            background: white;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #9e496e;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #9e496e;
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .receipt-table td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .receipt-table td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .total-row {
+            background: #fff0f6;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .status-paid {
+            color: #27824b;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .print-controls {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .print-button {
+            background: #9e496e;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .print-button:hover {
+            background: #843c5d;
+        }
+
+        @@media print {
+            body {
+                margin: 0;
+                padding: 15px;
+                max-width: none;
+            }
+
+            .print-controls {
+                display: none !important;
+            }
+
+            .total-row {
+                background: white;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>ARMELLE MULTI-SPECIALTY CENTER</h1>
+        <h2>PAYMENT RECEIPT</h2>
+    </div>
+
+    <table class="receipt-table">
+
+        <tr>
+            <td>Receipt ID</td>
+            <td>@Model.Id</td>
+        </tr>
+
+        <tr>
+            <td>Patient</td>
+            <td>@Model.Patient</td>
+        </tr>
+
+        <tr>
+            <td>Service</td>
+            <td>@Model.Service</td>
+        </tr>
+
+        <tr>
+            <td>Date</td>
+            <td>@Model.Date.ToString("MMMM dd, yyyy")</td>
+        </tr>
+
+        <tr>
+            <td>Payment Method</td>
+            <td>@Model.PaymentMethod</td>
+        </tr>
+
+        <tr>
+            <td>Amount</td>
+            <td>PHP @Model.Amount.ToString("N2")</td>
+        </tr>
+
+        <tr>
+            <td>Discount</td>
+            <td>PHP @Model.Discount.ToString("N2")</td>
+        </tr>
+
+        <tr class="total-row">
+            <td>Total Paid</td>
+            <td>PHP @totalAmount.ToString("N2")</td>
+        </tr>
+
+        <tr>
+            <td>Payment Status</td>
+            <td>
+                @if (Model.Status == "Paid")
+                {
+                    <span class="status-paid">Paid</span>
+                }
+                else
+                {
+                    <span>Pending / Unpaid</span>
+                }
+            </td>
+        </tr>
+
+    </table>
+
+    <div class="footer">
+        <p>
+            Thank you for choosing ARMELLE Multi-Specialty Center.
+        </p>
+
+        <p>
+            This receipt is generated from the
+            ARMELLE Clinic Management System.
+        </p>
+    </div>
+
+    <div class="print-controls">
+        <button type="button"
+                class="print-button"
+                onclick="window.print()">
+            Print / Save as PDF
+        </button>
+    </div>
+
+</body>
+</html>

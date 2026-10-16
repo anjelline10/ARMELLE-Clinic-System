@@ -1,0 +1,323 @@
+@model List<ClinicLocation>
+
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Our Branches";
+}
+
+<section class="pagehero">
+    <p class="eyebrow">OUR BRANCHES</p>
+
+    <h1>Care closer to you.</h1>
+
+    <p>
+        Each ARMELLE branch has its own departments, healthcare team,
+        rooms, schedules, services, and patient capacity.
+        Explore each branch and its facilities below.
+    </p>
+</section>
+
+
+<!-- =========================================================
+     BRANCH OVERVIEW PHOTOS
+========================================================= -->
+
+<section class="branch-overview">
+
+    <div class="branch-preview">
+
+        @for (var preview = 1; preview <= 4; preview++)
+        {
+            var previewImage =
+                $"/images/facilities/branch-preview-{preview}.svg";
+
+            <figure class="branch-preview-item">
+
+                @await Html.PartialAsync("_EditablePublicPhoto", new Armelle.Models.EditablePhotoSlot { Key = $"branch-preview-{preview}", DefaultPath = previewImage, Alt = $"ARMELLE branch preview {preview}" })
+
+            </figure>
+        }
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     BRANCH LIST
+========================================================= -->
+
+<section class="branch-list">
+
+    @if (Model != null && Model.Any())
+    {
+        var branchNumber = 0;
+
+        foreach (var branch in Model)
+        {
+            branchNumber++;
+
+            var branchMap =
+                "https://www.google.com/maps?q=" +
+                Uri.EscapeDataString(branch.Address ?? "") +
+                "&output=embed";
+
+            <article class="branch-card">
+
+                <!-- =========================
+                 BRANCH INFORMATION
+            ========================== -->
+
+                <div class="branch-info">
+
+                    <p class="eyebrow">
+                        BRANCH @branchNumber
+                    </p>
+
+                    <h2>
+                        @branch.Name
+                    </h2>
+
+                    <p>
+                        @branch.Address
+                    </p>
+
+                    <p>
+                        <strong>Operating Hours</strong><br />
+                        @branch.Hours
+                    </p>
+
+                    <p>
+                        <strong>Contact</strong><br />
+                        @branch.Contact
+                    </p>
+
+
+                    <h3>Departments & Care Areas</h3>
+
+                    <div class="deptchips">
+
+                        <span>General Medicine</span>
+
+                        <span>Family Medicine</span>
+
+                        <span>Internal Medicine</span>
+
+                        <span>Pediatrics</span>
+
+                        <span>OB-GYN</span>
+
+                        <span>Cardiology</span>
+
+                        <span>Dermatology</span>
+
+                        <span>ENT</span>
+
+                        <span>Ophthalmology</span>
+
+                        <span>Orthopedics</span>
+
+                        <span>Pulmonology</span>
+
+                        <span>Endocrinology</span>
+
+                        <span>Neurology</span>
+
+                        <span>Gastroenterology</span>
+
+                        <span>Nephrology</span>
+
+                        <span>Urology</span>
+
+                        <span>Mental Health</span>
+
+                        <span>Dental</span>
+
+                        <span>Laboratory</span>
+
+                        <span>Diagnostic Imaging</span>
+
+                        <span>Animal Bite Center</span>
+
+                        <span>Vaccination</span>
+
+                        <span>Rehabilitation</span>
+
+                        <span>Pharmacy</span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                 8 BRANCH PHOTOS
+            ========================== -->
+
+                <div class="branch-slideshow">
+
+                    <h3>
+                        Explore @branch.Name
+                    </h3>
+
+                    <div class="eight-gallery">
+
+                        @for (var photoNumber = 1;
+                              photoNumber <= 8;
+                              photoNumber++)
+                        {
+                            var imagePath =
+                                $"/images/facilities/branch-{branchNumber}-{photoNumber}.svg";
+
+                            var caption = photoNumber switch
+                            {
+                                1 => "Branch Exterior",
+                                2 => "Main Entrance",
+                                3 => "Reception Area",
+                                4 => "Patient Waiting Area",
+                                5 => "Clinic Hallway",
+                                6 => "Consultation Area",
+                                7 => "Laboratory & Diagnostics",
+                                8 => "Pharmacy & Major Facility",
+                                _ => "ARMELLE Facility"
+                            };
+
+                            <figure class="branch-gallery-item">
+
+                                @await Html.PartialAsync("_EditablePublicPhoto", new Armelle.Models.EditablePhotoSlot { Key = $"branch-{branchNumber}-{photoNumber}", DefaultPath = imagePath, Alt = $"{branch.Name} - {caption}" })
+
+                                <figcaption>
+                                    @caption
+                                </figcaption>
+
+                            </figure>
+                        }
+
+                    </div>
+
+
+                    <!-- =========================
+                     MAP
+                ========================== -->
+                    @if (!string.IsNullOrWhiteSpace(branch.Address))
+                    {
+                        <div class="branch-map">
+
+                            <h3>Location & Directions</h3>
+
+                            <iframe title="@($"Map for {branch.Name}")"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    src="@branchMap">
+                            </iframe>
+
+                        </div>
+                    }
+
+                </div>
+
+            </article>
+        }
+    }
+    else
+    {
+        <!-- =====================================================
+         FALLBACK IF DATABASE HAS NO BRANCHES YET
+    ====================================================== -->
+        @for (var branchNumber = 1;
+                  branchNumber <= 3;
+                  branchNumber++)
+        {
+            <article class="branch-card">
+
+                <div class="branch-info">
+
+                    <p class="eyebrow">
+                        BRANCH @branchNumber
+                    </p>
+
+                    <h2>
+                        ARMELLE Branch @branchNumber
+                    </h2>
+
+                    <p>
+                        Official branch name, address, operating hours,
+                        and contact information can be added by the
+                        Owner or authorized Administrator.
+                    </p>
+
+
+                    <h3>Departments & Care Areas</h3>
+
+                    <div class="deptchips">
+
+                        <span>General Medicine</span>
+                        <span>Internal Medicine</span>
+                        <span>Pediatrics</span>
+                        <span>OB-GYN</span>
+                        <span>Cardiology</span>
+                        <span>Dermatology</span>
+                        <span>ENT</span>
+                        <span>Ophthalmology</span>
+                        <span>Orthopedics</span>
+                        <span>Dental</span>
+                        <span>Laboratory</span>
+                        <span>Diagnostic Imaging</span>
+                        <span>Animal Bite Center</span>
+                        <span>Vaccination</span>
+                        <span>Rehabilitation</span>
+                        <span>Pharmacy</span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="branch-slideshow">
+
+                    <h3>
+                        Branch @branchNumber Facilities
+                    </h3>
+
+                    <div class="eight-gallery">
+
+                        @for (var photoNumber = 1;
+                              photoNumber <= 8;
+                              photoNumber++)
+                        {
+                            var imagePath =
+                                $"/images/facilities/branch-{branchNumber}-{photoNumber}.svg";
+
+                            var caption = photoNumber switch
+                            {
+                                1 => "Branch Exterior",
+                                2 => "Main Entrance",
+                                3 => "Reception Area",
+                                4 => "Patient Waiting Area",
+                                5 => "Clinic Hallway",
+                                6 => "Consultation Area",
+                                7 => "Laboratory & Diagnostics",
+                                8 => "Pharmacy & Major Facility",
+                                _ => "ARMELLE Facility"
+                            };
+
+                            <figure class="branch-gallery-item">
+
+                                @await Html.PartialAsync("_EditablePublicPhoto", new Armelle.Models.EditablePhotoSlot { Key = $"branch-{branchNumber}-{photoNumber}", DefaultPath = imagePath, Alt = $"ARMELLE Branch {branchNumber} - {caption}" })
+
+                                <figcaption>
+                                    @caption
+                                </figcaption>
+
+                            </figure>
+                        }
+
+                    </div>
+
+                </div>
+
+            </article>
+        }
+    }
+
+</section>

@@ -1,0 +1,6 @@
+@{ViewData["Title"]="ARMELLE Executive Team";}
+<h1>ARMELLE Executive Team</h1><p>Three owners have administrative access. Titles are business designations, not separate login roles.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px">
+@foreach(var member in new[]{new {Name="Angeline P. Labrado",Title="Chief Executive Officer (CEO), Chief Operating Officer (COO) & Owner"},new{Name="Ricky Jr. B. Diestro",Title="Chief Technology Officer (CTO) & Co-Founder"},new{Name="Mica P. Gonzales",Title="Chief Financial Officer (CFO) & Co-Founder"}}){
+<section style="padding:22px;border:1px solid #ddd;border-radius:14px"><h2>@member.Name</h2><p>@member.Title</p></section>}
+</div><p><a href="/Home/OwnerSettings">Edit my owner profile</a></p>

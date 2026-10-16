@@ -1,0 +1,1634 @@
+@using Armelle.Models
+@using System.Linq
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Patient Dashboard";
+
+    var appointments = ViewBag.Upcoming as IEnumerable<Appointment>
+        ?? Enumerable.Empty<Appointment>();
+
+    var labs = ViewBag.Labs as IEnumerable<LabRequest>
+        ?? Enumerable.Empty<LabRequest>();
+
+    var bills = ViewBag.Bills as IEnumerable<Invoice>
+        ?? Enumerable.Empty<Invoice>();
+
+    var historyAppointments = ViewBag.HistoryAppointments as IEnumerable<Appointment> ?? Enumerable.Empty<Appointment>();
+    var historyConsultations = ViewBag.HistoryConsultations as IEnumerable<Consultation> ?? Enumerable.Empty<Consultation>();
+    var historyPrescriptions = ViewBag.HistoryPrescriptions as IEnumerable<Consultation> ?? Enumerable.Empty<Consultation>();
+    var historyLabs = ViewBag.HistoryLabs as IEnumerable<LabRequest> ?? Enumerable.Empty<LabRequest>();
+    var historyTransactions = ViewBag.HistoryTransactions as IEnumerable<Invoice> ?? Enumerable.Empty<Invoice>();
+    var patientName = ViewBag.User?.ToString() ?? "Patient";
+    var savedProfile = ViewBag.Profile as PatientProfile;
+    var displayName = !string.IsNullOrWhiteSpace(savedProfile?.FullName) ? savedProfile.FullName : patientName;
+
+    var totalAppointments = ViewBag.TotalAppointments is int ta
+        ? ta : appointments.Count();
+
+    var totalLabs = ViewBag.TotalLabs is int tl
+        ? tl : labs.Count();
+
+    var totalBills = ViewBag.TotalBills is int tb
+        ? tb : bills.Count();
+
+    var totalPromos = ViewBag.TotalPromos is int tp
+        ? tp : 0;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>ARMELLE | Patient Dashboard</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <style>
+            :root {
+                --rose: #a94d6b;
+                --darkrose: #81374f;
+                --blush: #f7e8ed;
+                --ivory: #fffaf7;
+                --text: #343039;
+                --muted: #827780;
+                --border: #f0dfe5;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: var(--ivory);
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: var(--text);
+            }
+
+            button, input {
+                font: inherit;
+            }
+
+            button {
+                cursor: pointer;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            .topbar {
+                height: 76px;
+                background: white;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                cursor: pointer;
+            }
+
+                .brand img {
+                    width: 48px;
+                    height: 48px;
+                    object-fit: contain;
+                }
+
+                .brand strong {
+                    color: var(--rose);
+                    font-size: 21px;
+                    letter-spacing: 2px;
+                }
+
+                .brand small {
+                    display: block;
+                    color: #888;
+                    font-size: 10px;
+                }
+
+            .topnav {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+
+                .topnav a,
+                .topnav button {
+                    color: #544b52;
+                    border: none;
+                    background: none;
+                    font-size: 13px;
+                    font-weight: 600;
+                }
+
+                    .topnav a:hover,
+                    .topnav button:hover {
+                        color: var(--rose);
+                    }
+
+            .topicon {
+                position: relative;
+                font-size: 19px !important;
+                color: var(--rose) !important;
+            }
+
+            .avatar {
+                background: var(--blush) !important;
+                color: var(--rose) !important;
+                border-radius: 30px;
+                padding: 10px 14px;
+            }
+
+            .layout {
+                display: grid;
+                grid-template-columns: 235px minmax(0, 1fr);
+                min-height: calc(100vh - 76px);
+            }
+
+            .sidebar {
+                background: white;
+                border-right: 1px solid var(--border);
+                padding: 24px 13px;
+                position: sticky;
+                top: 76px;
+                height: calc(100vh - 76px);
+                overflow-y: auto;
+            }
+
+            .sidebar-title {
+                color: #9c8a94;
+                font-size: 11px;
+                letter-spacing: 2px;
+                padding: 8px 13px 17px;
+            }
+
+            .menu-btn {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 13px 14px;
+                border: 0;
+                border-radius: 11px;
+                background: transparent;
+                text-align: left;
+                color: #625861;
+                font-size: 13px;
+                margin-bottom: 5px;
+            }
+
+                .menu-btn i {
+                    width: 19px;
+                    font-size: 16px;
+                }
+
+                .menu-btn:hover,
+                .menu-btn.active {
+                    background: var(--blush);
+                    color: var(--rose);
+                    font-weight: 700;
+                }
+
+            .sidebar-divider {
+                border-top: 1px solid var(--border);
+                margin: 16px 5px;
+            }
+
+            .main {
+                padding: 26px 30px;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .page {
+                display: none;
+            }
+
+                .page.active {
+                    display: block;
+                }
+
+            .hero {
+                min-height: 180px;
+                border-radius: 18px;
+                padding: 30px;
+                display: flex;
+                align-items: center;
+                color: white;
+                background: linear-gradient(90deg, rgba(83, 36, 55, .95), rgba(123, 65, 88, .75), rgba(123, 65, 88, .18)), url('https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1400&q=80') center / cover;
+            }
+
+                .hero small {
+                    color: #ffe1eb;
+                    letter-spacing: 2px;
+                    font-size: 11px;
+                    font-weight: 700;
+                }
+
+                .hero h1 {
+                    margin: 10px 0;
+                    font-size: clamp(23px, 3vw, 33px);
+                    color: white;
+                }
+
+                .hero p {
+                    margin: 0;
+                    font-size: 13px;
+                    color: #fff0f5;
+                }
+
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .stat,
+            .panel,
+            .quick,
+            .promo-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 15px;
+            }
+
+            .stat {
+                padding: 20px;
+            }
+
+            .stat-icon {
+                background: var(--blush);
+                color: var(--rose);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                font-size: 19px;
+            }
+
+            .stat p {
+                color: var(--muted);
+                font-size: 12px;
+                margin: 12px 0 5px;
+            }
+
+            .stat h2 {
+                color: var(--rose);
+                font-size: 27px;
+                margin: 0;
+            }
+
+            .section-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                margin: 23px 0 13px;
+            }
+
+                .section-title h2 {
+                    margin: 0;
+                    font-size: 19px;
+                }
+
+            .quick-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 13px;
+            }
+
+            .quick {
+                text-align: left;
+                padding: 18px;
+                cursor: pointer;
+                transition: .2s;
+            }
+
+                .quick:hover {
+                    border-color: var(--rose);
+                    transform: translateY(-2px);
+                }
+
+                .quick i {
+                    color: var(--rose);
+                    background: var(--blush);
+                    border-radius: 11px;
+                    padding: 13px;
+                    font-size: 18px;
+                    margin-bottom: 12px;
+                }
+
+                .quick strong {
+                    display: block;
+                    font-size: 14px;
+                }
+
+                .quick small {
+                    display: block;
+                    color: var(--muted);
+                    font-size: 12px;
+                    margin-top: 7px;
+                }
+
+            .promo-strip {
+                margin-top: 18px;
+                padding: 16px 20px;
+                background: var(--blush);
+                border-radius: 13px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 15px;
+            }
+
+                .promo-strip strong {
+                    color: var(--darkrose);
+                }
+
+                .promo-strip p {
+                    color: #856775;
+                    margin: 6px 0 0;
+                    font-size: 12px;
+                }
+
+            .btn {
+                border: none;
+                border-radius: 10px;
+                background: var(--rose);
+                color: white;
+                padding: 11px 16px;
+                font-size: 13px;
+                font-weight: 600;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+                .btn:hover {
+                    background: var(--darkrose);
+                }
+
+            .btn-back {
+                background: var(--blush);
+                color: var(--rose);
+            }
+
+                .btn-back:hover {
+                    background: #edd5de;
+                }
+
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+                .page-header h1 {
+                    margin: 0;
+                    font-size: 24px;
+                }
+
+            .panel {
+                padding: 24px;
+                margin-bottom: 17px;
+            }
+
+                .panel h3 {
+                    margin-top: 0;
+                    font-size: 17px;
+                }
+
+            .muted {
+                color: var(--muted);
+                font-size: 13px;
+                line-height: 1.7;
+            }
+
+            .record {
+                border-bottom: 1px solid var(--border);
+                padding: 15px 0;
+                font-size: 14px;
+                line-height: 1.7;
+            }
+
+                .record:last-child {
+                    border-bottom: none;
+                }
+
+                .record small {
+                    color: var(--muted);
+                }
+
+            .pill {
+                background: var(--blush);
+                color: var(--rose);
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 17px;
+            }
+
+            .promo-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 17px;
+            }
+
+            .promo-card {
+                overflow: hidden;
+            }
+
+                .promo-card img {
+                    width: 100%;
+                    height: 160px;
+                    object-fit: cover;
+                }
+
+            .promo-card-body {
+                padding: 19px;
+            }
+
+            .promo-card h3 {
+                margin: 12px 0;
+            }
+
+            .notice {
+                background: #fff5f8;
+                border: 1px solid #f0d7e0;
+                border-radius: 12px;
+                padding: 15px;
+                color: #795666;
+                font-size: 13px;
+                line-height: 1.7;
+            }
+
+            .chat-fab {
+                position: fixed;
+                bottom: 23px;
+                right: 25px;
+                background: var(--rose);
+                color: white;
+                border: none;
+                padding: 15px 20px;
+                border-radius: 30px;
+                box-shadow: 0 10px 25px #a94d6b35;
+                z-index: 150;
+            }
+
+            .chatbox {
+                display: none;
+                position: fixed;
+                bottom: 85px;
+                right: 25px;
+                width: min(360px, calc(100vw - 30px));
+                height: 430px;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 17px;
+                box-shadow: 0 15px 45px #0002;
+                z-index: 151;
+                overflow: hidden;
+                flex-direction: column;
+            }
+
+                .chatbox.open {
+                    display: flex;
+                }
+
+            .chat-head {
+                background: var(--rose);
+                color: white;
+                padding: 16px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+                .chat-head button {
+                    background: transparent;
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                }
+
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+                font-size: 13px;
+                line-height: 1.6;
+            }
+
+            .chat-message {
+                margin-bottom: 12px;
+                background: #f8edf1;
+                padding: 10px;
+                border-radius: 10px;
+                overflow-wrap: anywhere;
+            }
+
+                .chat-message.user {
+                    background: #eee;
+                }
+
+            .chat-form {
+                display: flex;
+                padding: 10px;
+                border-top: 1px solid var(--border);
+                gap: 8px;
+            }
+
+                .chat-form input {
+                    flex: 1;
+                    min-width: 0;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 9px;
+                }
+
+                .chat-form button {
+                    background: var(--rose);
+                    color: white;
+                    border: none;
+                    border-radius: 9px;
+                    padding: 10px;
+                }
+
+            @@media (max-width: 1050px) {
+                .topnav .optional {
+                    display: none;
+                }
+
+                .stats {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @@media (max-width: 800px) {
+                .layout {
+                    grid-template-columns: 1fr;
+                }
+
+                .sidebar {
+                    position: static;
+                    height: auto;
+                    display: flex;
+                    overflow-x: auto;
+                    gap: 6px;
+                    padding: 10px;
+                }
+
+                .sidebar-title,
+                .sidebar-divider {
+                    display: none;
+                }
+
+                .menu-btn {
+                    white-space: nowrap;
+                    width: auto;
+                    margin: 0;
+                }
+
+                .main {
+                    padding: 18px;
+                }
+            }
+
+            @@media (max-width: 550px) {
+                .stats,
+                .quick-grid,
+                .info-grid,
+                .promo-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .topbar {
+                    padding: 0 12px;
+                }
+
+                .topnav {
+                    gap: 8px;
+                }
+
+                    .topnav .optional {
+                        display: none;
+                    }
+
+                .brand strong {
+                    font-size: 16px;
+                }
+
+                .promo-strip {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .page-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+            }
+
+        /* Public page content displayed within patient portal */
+        .public-portal-page{padding:0!important;max-width:none!important}
+        .portal-page-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:20px 24px;background:#fff;border-radius:15px;margin-bottom:12px}
+        .portal-page-head h2{margin:3px 0;color:#8f4260;font-size:23px}
+        .portal-page-head small{font-size:11px;letter-spacing:2px;color:#b26780}
+        .portal-page-head button{border:1px solid #ebcbd6;background:#fff6f9;color:#944760;padding:11px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+        .public-content-frame{display:block;width:100%;height:1100px;min-height:600px;border:0;background:#fff;border-radius:14px}
+
+            /* Patient profile settings */
+            .profile-layout{display:grid;grid-template-columns:minmax(220px,280px) minmax(0,1fr);gap:20px;align-items:start}
+            .profile-avatar-panel{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+            .profile-avatar{width:124px;height:124px;border-radius:50%;display:grid;place-items:center;background:var(--blush);border:4px solid #fff;box-shadow:0 0 0 1px var(--border);color:var(--rose);font-size:52px;overflow:hidden}
+            .profile-avatar img{width:100%;height:100%;object-fit:cover}
+            .profile-avatar-panel h3{margin:4px 0 0;overflow-wrap:anywhere}
+            .profile-upload-btn{display:inline-flex;align-items:center;gap:8px;background:var(--rose);color:#fff;padding:11px 16px;border-radius:10px;cursor:pointer}
+            .profile-link{border:0;background:none;color:var(--rose);text-decoration:underline;cursor:pointer}
+            .profile-info-note{background:#fff6ec;border:1px solid #f1d5ae;color:#79562b;padding:12px;border-radius:10px;text-align:left;font-size:12px;line-height:1.5;margin-top:10px}
+            .profile-main{display:grid;gap:20px;min-width:0}.profile-main .panel{margin:0}.profile-main h3{color:var(--darkrose)}
+            .profile-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}
+            .profile-field{display:flex;flex-direction:column;gap:7px;min-width:0}.profile-field label{font-size:13px;font-weight:650}.profile-field label span{color:#b12c45}
+            .profile-field input,.profile-field select,.profile-field textarea{width:100%;min-width:0;padding:12px 13px;border:1px solid #e5d6dc;border-radius:10px;background:#fff;color:var(--text);font:inherit;outline:none}
+            .profile-field input:focus,.profile-field select:focus,.profile-field textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px #a94d6b18}
+            .profile-wide{grid-column:1/-1}.profile-section-title{border-top:1px solid var(--border);padding-top:20px;margin-top:24px}
+            .profile-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:22px}.profile-save{background:var(--rose);color:white;border:0;padding:12px 20px;border-radius:10px}
+            .profile-password{position:relative}.profile-password input{padding-right:44px}.profile-password button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);padding:9px}
+            .profile-feedback{display:none;padding:12px;border-radius:9px;font-size:13px;background:#fff6ec;color:#79562b;border:1px solid #f1d5ae}.profile-feedback.visible{display:block}
+            @@media(max-width:900px){.profile-layout{grid-template-columns:1fr}.profile-avatar-panel{max-width:none}}
+            @@media(max-width:580px){.profile-fields{grid-template-columns:1fr}.profile-wide{grid-column:auto}}
+
+    </style>
+</head>
+
+<body>
+<div style="background:#fff3f8;padding:12px;text-align:center"><a style="font-weight:bold;color:#8e3457" href="/PatientRecords">My Profile · Appointments · Receipts · Prescriptions · Lab Results</a></div>
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+        <div class="brand" onclick="showPage('dashboard')">
+            <img src="/images/armelle-logo.png"
+                 alt="ARMELLE Logo" />
+
+            <div>
+                <strong>ARMELLE</strong>
+                <small>Multi-Specialty Center</small>
+            </div>
+        </div>
+
+        <nav class="topnav" aria-label="Clinic navigation">
+
+            <button onclick="showPage('dashboard')">
+                Home
+            </button>
+
+            <button type="button" onclick="openPublic('doctors')">Doctors</button>
+
+            <button type="button" onclick="openPublic('resources')">Resources</button>
+
+            <button type="button" onclick="openPublic('branches')">Branches</button>
+
+            <button type="button" onclick="openPublic('about')">About</button>
+
+            <button type="button" onclick="openPublic('contact')">Contact</button>
+
+            <button class="topicon"
+                    onclick="showPage('notifications')"
+                    title="Notifications">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+
+            <button class="avatar"
+                    onclick="showPage('profile')">
+                <i class="fa-regular fa-user"></i>
+            </button>
+        </nav>
+    </header>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="sidebar-title">PATIENT MENU</div>
+
+            <button class="menu-btn active"
+                    data-page="dashboard"
+                    onclick="showPage('dashboard')">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </button>
+
+            <button class="menu-btn"
+                    onclick="openPublic('booking')">
+                <i class="fa-regular fa-calendar-plus"></i>
+                Book Appointment
+            </button>
+
+            <button class="menu-btn"
+                    data-page="appointments"
+                    onclick="showPage('appointments')">
+                <i class="fa-regular fa-calendar-check"></i>
+                My Appointments
+            </button>
+
+            <button class="menu-btn"
+                    data-page="records"
+                    onclick="showPage('records')">
+                <i class="fa-regular fa-folder-open"></i>
+                Medical Records
+            </button>
+
+            <button class="menu-btn"
+                    data-page="labs"
+                    onclick="showPage('labs')">
+                <i class="fa-solid fa-flask"></i>
+                Laboratory Results
+            </button>
+
+            <button class="menu-btn"
+                    data-page="billing"
+                    onclick="showPage('billing')">
+                <i class="fa-regular fa-credit-card"></i>
+                Billing & Payments
+            </button>
+
+            <button class="menu-btn"
+                    data-page="promos"
+                    onclick="showPage('promos')">
+                <i class="fa-solid fa-gift"></i>
+                Discounts & Promos
+            </button>
+
+            <button class="menu-btn"
+                    data-page="profile"
+                    onclick="showPage('profile')">
+                <i class="fa-regular fa-user"></i>
+                Profile Settings
+            </button>
+
+            <div class="sidebar-divider"></div>
+
+            <button class="menu-btn"
+                    onclick="toggleChat()">
+                <i class="fa-solid fa-robot"></i>
+                Ask ARMELLE AI
+            </button>
+
+            <button class="menu-btn"
+                    onclick="location.href='/Auth/Logout'">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="main">
+
+            <!-- DASHBOARD -->
+            <section id="doctors" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Meet Our Doctors</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Meet Our Doctors" data-url="/Public/Doctors" loading="lazy"></iframe>
+            </section>
+            <section id="resources" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Patient Resources</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Patient Resources" data-url="/Public/Resources" loading="lazy"></iframe>
+            </section>
+            <section id="branches" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Explore Locations</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Explore Locations" data-url="/Public/Locations" loading="lazy"></iframe>
+            </section>
+            <section id="about" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>About ARMELLE</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="About ARMELLE" data-url="/Public/About" loading="lazy"></iframe>
+            </section>
+            <section id="contact" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Contact Us</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Contact Us" data-url="/Public/Contact" loading="lazy"></iframe>
+            </section>
+            <section id="gallery" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Facilities Gallery</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Facilities Gallery" data-url="/Public/Gallery" loading="lazy"></iframe>
+            </section>
+            <section id="team" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Our Medical Team</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Our Medical Team" data-url="/Public/Team" loading="lazy"></iframe>
+            </section>
+            <section id="services" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Services & Prices</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Services & Prices" data-url="/Public/Services" loading="lazy"></iframe>
+            </section>
+            <section id="booking" class="page public-portal-page">
+                <div class="portal-page-head"><div><small>ARMELLE PATIENT PORTAL</small><h2>Book Appointment</h2></div><button type="button" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <iframe class="public-content-frame" title="Book Appointment" data-url="/Public/Book" loading="lazy"></iframe>
+            </section>
+            <section id="dashboard" class="page active">
+
+                <div class="hero">
+                    <div>
+                        <small>YOUR HEALTH. OUR PRIORITY.</small>
+                        <h1>Welcome back, @patientName!</h1>
+                        <p>
+                            Your health, appointments, and care
+                            in one convenient place.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat">
+                        <span class="stat-icon">
+                            <i class="fa-regular fa-calendar-check"></i>
+                        </span>
+                        <p>Total Appointments</p>
+                        <h2>@totalAppointments</h2>
+                    </div>
+
+                    <div class="stat">
+                        <span class="stat-icon">
+                            <i class="fa-solid fa-gift"></i>
+                        </span>
+                        <p>Promos Availed</p>
+                        <h2>@totalPromos</h2>
+                    </div>
+
+                    <div class="stat">
+                        <span class="stat-icon">
+                            <i class="fa-solid fa-flask"></i>
+                        </span>
+                        <p>Laboratory Records</p>
+                        <h2>@totalLabs</h2>
+                    </div>
+
+                    <div class="stat">
+                        <span class="stat-icon">
+                            <i class="fa-regular fa-credit-card"></i>
+                        </span>
+                        <p>Billing Records</p>
+                        <h2>@totalBills</h2>
+                    </div>
+
+                </div>
+
+                <div class="section-title">
+                    <h2>Quick Access</h2>
+                </div>
+
+                <div class="quick-grid">
+
+                    <button class="quick"
+                            onclick="openPublic('booking')">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                        <strong>Book Appointment</strong>
+                        <small>Schedule your next clinic visit</small>
+                    </button>
+
+                    <button class="quick"
+                            onclick="showPage('appointments')">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <strong>My Appointments</strong>
+                        <small>View upcoming and past visits</small>
+                    </button>
+
+                    <button class="quick"
+                            onclick="showPage('records')">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <strong>Medical Records</strong>
+                        <small>Consultations, imaging and files</small>
+                    </button>
+
+                    <button class="quick"
+                            onclick="showPage('labs')">
+                        <i class="fa-solid fa-flask"></i>
+                        <strong>Laboratory Results</strong>
+                        <small>Review your laboratory records</small>
+                    </button>
+
+                    <button class="quick"
+                            onclick="showPage('billing')">
+                        <i class="fa-regular fa-credit-card"></i>
+                        <strong>Billing & Payments</strong>
+                        <small>Invoices and payment status</small>
+                    </button>
+
+                    <button class="quick"
+                            onclick="showPage('promos')">
+                        <i class="fa-solid fa-gift"></i>
+                        <strong>Discounts & Promos</strong>
+                        <small>Healthcare packages and benefits</small>
+                    </button>
+
+                </div>
+
+                <div class="promo-strip">
+                    <div>
+                        <strong>
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            ARMELLE Health & Wellness
+                        </strong>
+                        <p>
+                            Explore healthcare services,
+                            packages, and eligible benefits.
+                        </p>
+                    </div>
+
+                    <button class="btn"
+                            onclick="showPage('promos')">
+                        View Benefits
+                    </button>
+                </div>
+            </section>
+
+            <!-- APPOINTMENTS -->
+            <section id="appointments" class="page">
+<div class="panel" style="margin:12px 0"><button type="button" class="btn" onclick="armelleToggleDemo()" id="armelleDemoButton">Hide demo records</button><p class="muted">Presentation-only examples; your real records stay unchanged.</p></div>
+<div class="demo-section" data-demo-section="appointments" style="display:block;margin:16px 0"><div class="panel"><h3>DEMO ONLY — Appointments — 7 pending sample bookings</h3><p class="muted">Fictional examples for presentation; not real patient records, prescriptions, payments, or redeemable offers.</p><div id="armelle-demo-appointments"></div></div></div>
+
+                <div class="page-header">
+                    <h1>My Appointments</h1>
+                    <button class="btn btn-back"
+                            onclick="showPage('dashboard')">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h3>Appointment Schedule</h3>
+
+                    <a class="btn" href="#" onclick="openPublic('booking');return false;">
+                        + New Appointment
+                    </a>
+
+                    @if (!appointments.Any())
+                    {
+                        <p class="muted">
+                            No upcoming appointments.
+                        </p>
+                    }
+
+                    @foreach (var a in appointments)
+                    {
+                        <div class="record">
+                            <strong>@a.Service</strong>
+                            <div>Doctor: @a.Doctor</div>
+                            <div>Branch: @a.Branch</div>
+                            <div>
+                                @a.Schedule.ToString("MMMM dd, yyyy h:mm tt")
+                            </div>
+                            <span class="pill">@a.Status</span>
+                            <div>
+                                <small>
+                                    Payment: @a.PaymentStatus
+                                </small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- MEDICAL RECORDS -->
+            <section id="records" class="page">
+<div class="demo-section" data-demo-section="records" style="display:block;margin:16px 0"><div class="panel"><h3>DEMO ONLY — Medical History (7) and Reseta / Prescription History (7)</h3><p class="muted">Fictional examples for presentation; not real patient records, prescriptions, payments, or redeemable offers.</p><div id="armelle-demo-records"></div></div></div>
+                <div class="page-header"><h1>My Medical History</h1><button class="btn btn-back" onclick="showPage('dashboard')">← Back to Dashboard</button></div>
+                <p class="muted">Private patient records. Up to 7 latest entries per category. Records are saved in MySQL and remain after reload.</p>
+                <div class="panel"><h3>Appointment History</h3>
+                    @if (!historyAppointments.Any()) { <p class="muted">No saved appointments for this account yet.</p> }
+                    @foreach (var item in historyAppointments) { <div class="record"><strong>@item.Service — @item.Specialty</strong><div>Patient: @item.Patient | Doctor: @item.Doctor</div><div>@item.Schedule.ToString("MMM dd, yyyy h:mm tt") | @item.Branch</div><span class="pill">@item.Status</span></div> }
+                </div>
+                <div class="panel"><h3>Consultation / Checkup History</h3>
+                    @if (!historyConsultations.Any()) { <p class="muted">No recorded consultations yet.</p> }
+                    @foreach (var item in historyConsultations) { <div class="record"><strong>@item.Patient — @item.Doctor</strong><div>@item.Date.ToString("MMM dd, yyyy h:mm tt")</div><div>Diagnosis: @item.Diagnosis</div><div>Notes: @item.Notes</div></div> }
+                </div>
+                <div class="panel" id="patient-prescriptions"><h3>Reseta / Prescription History</h3>
+                    @if (!historyPrescriptions.Any()) { <p class="muted">No recorded prescriptions yet. Prescriptions must be issued by an authorized clinician.</p> }
+                    @foreach (var item in historyPrescriptions) { <div class="record"><strong>Prescription — @item.Date.ToString("MMM dd, yyyy")</strong><div>Patient: @item.Patient | Doctor: @item.Doctor</div><div style="white-space:pre-wrap">@item.Prescription</div></div> }
+                </div>
+                <div class="panel"><h3>Laboratory, X-Ray & Imaging History</h3>
+                    @if (!historyLabs.Any()) { <p class="muted">No laboratory or imaging requests yet.</p> }
+                    @foreach (var item in historyLabs) { <div class="record"><strong>@item.Test</strong><div>Patient: @item.Patient | @item.Requested.ToString("MMM dd, yyyy")</div><div>Result: @item.Result</div><span class="pill">@item.Status</span></div> }
+                    <button class="btn" onclick="showPage('labs')">Open Laboratory Results</button>
+                </div>
+                <div class="panel"><h3>Transaction / Payment History</h3>
+                    @if (!historyTransactions.Any()) { <p class="muted">No recorded transactions yet.</p> }
+                    @foreach (var item in historyTransactions) { <div class="record"><strong>@item.Service — ₱@item.Amount.ToString("N2")</strong><div>Patient: @item.Patient | @item.Date.ToString("MMM dd, yyyy")</div><div>@item.PaymentMethod | Discount: ₱@item.Discount.ToString("N2")</div><span class="pill">@item.Status</span></div> }
+                </div>
+            </section>
+
+            <!-- LABORATORY -->
+            <section id="labs" class="page">
+<div class="demo-section" data-demo-section="labs" style="display:block;margin:16px 0"><div class="panel"><h3>DEMO ONLY — Laboratory / X-Ray — 7 sample results</h3><p class="muted">Fictional examples for presentation; not real patient records, prescriptions, payments, or redeemable offers.</p><div id="armelle-demo-labs"></div></div></div>
+
+                <div class="page-header">
+                    <h1>Laboratory Results</h1>
+                    <button class="btn btn-back"
+                            onclick="showPage('dashboard')">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h3>My Laboratory History</h3>
+
+                    @if (!labs.Any())
+                    {
+                        <p class="muted">
+                            No laboratory records yet.
+                        </p>
+                    }
+
+                    @foreach (var lab in labs)
+                    {
+                        <div class="record">
+                            <strong>@lab.Test</strong>
+                            <div>Patient: @lab.Patient</div>
+                            <div>Result: @lab.Result</div>
+                            <div>
+                                Requested:
+                                @lab.Requested.ToString("MMM dd, yyyy")
+                            </div>
+                            <span class="pill">@lab.Status</span>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- BILLING -->
+            <section id="billing" class="page">
+<div class="demo-section" data-demo-section="billing" style="display:block;margin:16px 0"><div class="panel"><h3>DEMO ONLY — Billing & Payments — 7 demo transactions</h3><p class="muted">Fictional examples for presentation; not real patient records, prescriptions, payments, or redeemable offers.</p><div id="armelle-demo-billing"></div></div></div>
+
+                <div class="page-header">
+                    <h1>Billing & Payments</h1>
+                    <button class="btn btn-back"
+                            onclick="showPage('dashboard')">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h3>My Invoices</h3>
+
+                    @if (!bills.Any())
+                    {
+                        <p class="muted">
+                            No billing records yet.
+                        </p>
+                    }
+
+                    @foreach (var b in bills)
+                    {
+                        <div class="record">
+                            <strong>@b.Service</strong>
+                            <div>
+                                Amount: ₱@b.Amount.ToString("N2")
+                            </div>
+                            <div>
+                                Discount: ₱@b.Discount.ToString("N2")
+                            </div>
+                            <div>
+                                Payment Method: @b.PaymentMethod
+                            </div>
+                            <span class="pill">@b.Status</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="panel">
+                    <h3>Available Payment Options</h3>
+                    <p class="muted">
+                        GCash, Maya, credit/debit card,
+                        online bank transfer, and payment
+                        at the clinic can be supported.
+                    </p>
+
+                    <div class="notice">
+                        QR codes and payment proof submission
+                        will be enabled only after the clinic's
+                        verified merchant accounts, secure upload,
+                        and payment verification are configured.
+                        Uploading proof does not automatically
+                        mark an invoice as paid.
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROMOS -->
+            <section id="promos" class="page">
+<div class="demo-section" data-demo-section="promos" style="display:block;margin:16px 0"><div class="panel"><h3>DEMO ONLY — Discounts & Promos — 7 sample offers</h3><p class="muted">Fictional examples for presentation; not real patient records, prescriptions, payments, or redeemable offers.</p><div id="armelle-demo-promos"></div></div></div>
+
+                <div class="page-header">
+                    <h1>Discounts & Promos</h1>
+                    <button class="btn btn-back"
+                            onclick="showPage('dashboard')">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+
+                @{ var livePromos=ViewBag.ActivePromotions as IEnumerable<Armelle.Models.ClinicPromotion> ?? Enumerable.Empty<Armelle.Models.ClinicPromotion>(); var promoHistory=ViewBag.PromoRedemptions as IEnumerable<Armelle.Models.PromotionRedemption> ?? Enumerable.Empty<Armelle.Models.PromotionRedemption>(); }
+                <div class="promo-grid">
+                @foreach(var offer in livePromos){<article class="promo-card"><div class="promo-card-body"><span class="pill">ACTIVE OFFER</span><h3>@offer.Title</h3><strong>@offer.DiscountValue @(offer.DiscountType=="Percent"?"% OFF":"PHP OFF")</strong><p class="muted">@offer.Description</p>@if(!string.IsNullOrWhiteSpace(offer.PromoCode)){<p>Code: @offer.PromoCode</p>}<small>Until @offer.EndsAt.ToString("MMM dd, yyyy")</small></div></article>}
+                </div>
+                @if(!livePromos.Any()){<p class="muted">No active discounts or promotions right now.</p>}
+                <div class="panel" style="margin-top:18px"><h3>My Promo History</h3>
+                @foreach(var entry in promoHistory){<div class="record">Promotion #@entry.PromotionId · @entry.RedeemedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")<br/><small>Reference: @entry.Reference</small></div>}
+                @if(!promoHistory.Any()){<p class="muted">You have not availed a promotion yet.</p>}
+                </div>
+            </section>
+
+            <!-- NOTIFICATIONS -->
+            <section id="notifications" class="page">
+
+                <div class="page-header">
+                    <h1>Notifications</h1>
+                    <button class="btn btn-back"
+                            onclick="showPage('dashboard')">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h3>Appointment Updates</h3>
+
+                    @if (!appointments.Any())
+                    {
+                        <p class="muted">
+                            No upcoming appointment updates.
+                        </p>
+                    }
+
+                    @foreach (var a in appointments)
+                    {
+                        <div class="record">
+                            <strong>@a.Service</strong>
+                            <div>
+                                @a.Schedule.ToString("MMM dd, yyyy h:mm tt")
+                            </div>
+                            <small>@a.Status</small>
+                        </div>
+                    }
+                </div>
+
+                <div class="notice">
+                    Automatic notifications for payment
+                    verification, results release, schedule
+                    changes, and new promotions will be
+                    connected to the notification backend.
+                </div>
+            </section>
+
+            <!-- PROFILE SETTINGS: UI ready for controller/database integration -->
+            <section id="profile" class="page">
+                <div class="page-header">
+                    <div><h1>Profile Settings</h1><p class="muted">Manage your personal information and account security.</p></div>
+                    <button type="button" class="btn btn-back" onclick="showPage('dashboard')">← Back to Dashboard</button>
+                </div>
+                <div class="profile-layout">
+                    <aside class="panel profile-avatar-panel">
+                        <div class="profile-avatar" id="profileAvatarPreview">@if (!string.IsNullOrWhiteSpace(savedProfile?.PhotoPath)) { <img src="@savedProfile.PhotoPath" alt="Patient photo" /> } else { <i class="fa-regular fa-user"></i> }</div>
+                        <h3 id="profileDisplayName">@displayName</h3>
+                        <p class="muted">Patient Account</p>
+                        <label class="btn profile-upload-btn" for="profilePhotoInput"><i class="fa-solid fa-camera"></i> Change Photo</label>
+                        <input id="profilePhotoInput" form="patientProfileForm" name="ProfilePhoto" type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="previewPatientPhoto(this)" />
+                        <button type="button" class="profile-link" onclick="removePatientPhoto()">Remove Photo</button>
+                        <small class="muted">JPG, PNG or WebP • Maximum 2 MB</small>
+                        <div class="profile-info-note"><i class="fa-solid fa-circle-info"></i> Your profile is securely saved to your patient account in MySQL.</div>
+                    </aside>
+                    <div class="profile-main">
+                        <form id="patientProfileForm" class="panel" onsubmit="preparePatientProfile(event)" action="/Patient/SaveProfile" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="RemovePhoto" id="removePhotoFlag" value="false" />
+                            <h3><i class="fa-regular fa-address-card"></i> Personal Information</h3>
+                            <div class="profile-fields">
+                                <div class="profile-field"><label for="profileFullName">Full Name <span>*</span></label><input id="profileFullName" name="FullName" required maxlength="120" value="@displayName" autocomplete="name" /></div>
+                                <div class="profile-field"><label for="profileBirthDate">Date of Birth</label><input id="profileBirthDate" name="BirthDate" type="date" value="@(savedProfile?.BirthDate?.ToString("yyyy-MM-dd"))" /></div>
+                                <div class="profile-field"><label for="profileSex">Sex</label><select id="profileSex" name="Sex"><option value="">Select sex</option><option selected="@(savedProfile?.Sex == "Female")">Female</option><option selected="@(savedProfile?.Sex == "Male")">Male</option><option selected="@(savedProfile?.Sex == "Prefer not to say")">Prefer not to say</option></select></div>
+                                <div class="profile-field"><label for="profileContact">Mobile Number</label><input id="profileContact" name="Contact" value="@(savedProfile?.Contact)" type="tel" maxlength="20" placeholder="09XXXXXXXXX" autocomplete="tel" /></div>
+                                <div class="profile-field"><label for="profileEmail">Email Address</label><input id="profileEmail" name="Email" value="@(savedProfile?.Email)" type="email" maxlength="160" placeholder="name@example.com" autocomplete="email" /></div>
+                                <div class="profile-field profile-wide"><label for="profileAddress">Complete Address</label><textarea id="profileAddress" name="Address" rows="3" maxlength="350" placeholder="House no., street, barangay, city, province">@(savedProfile?.Address)</textarea></div>
+                            </div>
+                            <h3 class="profile-section-title"><i class="fa-solid fa-kit-medical"></i> Emergency Contact</h3>
+                            <div class="profile-fields">
+                                <div class="profile-field"><label for="profileEmergencyName">Contact Person</label><input id="profileEmergencyName" name="EmergencyContactName" value="@(savedProfile?.EmergencyContactName)" maxlength="120" placeholder="Full name" /></div>
+                                <div class="profile-field"><label for="profileEmergencyRelationship">Relationship</label><input id="profileEmergencyRelationship" name="EmergencyRelationship" value="@(savedProfile?.EmergencyRelationship)" maxlength="70" placeholder="e.g., Parent, Spouse" /></div>
+                                <div class="profile-field"><label for="profileEmergencyPhone">Emergency Phone</label><input id="profileEmergencyPhone" name="EmergencyContactNumber" value="@(savedProfile?.EmergencyContactNumber)" type="tel" maxlength="20" placeholder="09XXXXXXXXX" /></div>
+                            </div>
+                            <h3 class="profile-section-title"><i class="fa-regular fa-id-card"></i> Health Coverage</h3>
+                            <div class="profile-fields">
+                                <div class="profile-field"><label for="profileHmo">HMO Provider</label><input id="profileHmo" name="Hmo" value="@(savedProfile?.Hmo)" maxlength="120" placeholder="HMO provider (if applicable)" /></div>
+                                <div class="profile-field"><label for="profileHmoNumber">Member / Card Number</label><input id="profileHmoNumber" name="HmoMemberNumber" value="@(savedProfile?.HmoMemberNumber)" maxlength="80" placeholder="Optional" /></div>
+                            </div>
+                            <div id="profileFeedback" class="profile-feedback" role="status" aria-live="polite"></div>
+                            <div class="profile-actions"><button type="reset" class="btn btn-back" onclick="resetPatientProfileUI()">Cancel</button><button type="submit" class="btn profile-save"><i class="fa-regular fa-floppy-disk"></i> Save Changes</button></div>
+                        </form>
+                        <form id="patientPasswordForm" class="panel" onsubmit="preparePasswordChange(event)" action="/Patient/ChangePassword" method="post">
+                            @Html.AntiForgeryToken()
+                            <h3><i class="fa-solid fa-lock"></i> Change Password</h3>
+                            <p class="muted">Protect your patient account with a strong password.</p>
+                            <div class="profile-fields">
+                                <div class="profile-field profile-wide"><label for="profileCurrentPassword">Current Password</label><div class="profile-password"><input id="profileCurrentPassword" name="CurrentPassword" type="password" autocomplete="current-password" required /><button type="button" onclick="togglePatientPassword('profileCurrentPassword',this)" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div></div>
+                                <div class="profile-field"><label for="profileNewPassword">New Password</label><div class="profile-password"><input id="profileNewPassword" name="NewPassword" type="password" autocomplete="new-password" minlength="8" required /><button type="button" onclick="togglePatientPassword('profileNewPassword',this)" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div></div>
+                                <div class="profile-field"><label for="profileConfirmPassword">Confirm New Password</label><div class="profile-password"><input id="profileConfirmPassword" name="ConfirmPassword" type="password" autocomplete="new-password" minlength="8" required /><button type="button" onclick="togglePatientPassword('profileConfirmPassword',this)" aria-label="Show password"><i class="fa-regular fa-eye"></i></button></div></div>
+                            </div>
+                            <div id="passwordFeedback" class="profile-feedback" role="status" aria-live="polite"></div>
+                            <div class="profile-actions"><button type="submit" class="btn profile-save"><i class="fa-solid fa-key"></i> Update Password</button></div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- AI CHAT -->
+    <button class="chat-fab"
+            onclick="toggleChat()">
+        <i class="fa-solid fa-sparkles"></i>
+        ✦ Ask ARMELLE
+    </button>
+
+    <div id="patientChat" class="chatbox">
+
+        <div class="chat-head">
+            <strong>✦ Ask ARMELLE AI</strong>
+            <button onclick="toggleChat()">×</button>
+        </div>
+
+        <div id="chatMessages" class="chat-messages">
+            <div class="chat-message">
+                Hello! I can help with ARMELLE
+                doctors, branches, services,
+                appointments, and patient resources.
+            </div>
+        </div>
+
+        <form class="chat-form"
+              onsubmit="sendChat(event)">
+
+            <input id="chatInput"
+                   type="text"
+                   placeholder="Ask ARMELLE..."
+                   required />
+
+            <button type="submit">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+
+            // Reuse the real public views, CSS and database-driven content.
+            // The patient header and sidebar stay visible at all times.
+            const portalRoutes = {
+                doctors:'/Public/Doctors', resources:'/Public/Resources',
+                branches:'/Public/Locations', about:'/Public/About',
+                contact:'/Public/Contact', gallery:'/Public/Gallery',
+                team:'/Public/Team', services:'/Public/Services',
+                booking:'/Public/Book'
+            };
+            function openPublic(section, url) {
+                const panel=document.getElementById(section);
+                if (!panel) return;
+                const frame=panel.querySelector('iframe');
+                if(frame){
+                    const next=url || portalRoutes[section];
+                    if(next && frame.dataset.loadedUrl!==next){
+                        frame.src=next;
+                        frame.dataset.loadedUrl=next;
+                    }
+                }
+                showPage(section);
+            }
+            function preparePublicFrame(frame){
+                try {
+                    const doc=frame.contentDocument;
+                    if(!doc || !doc.body) return;
+                    const css=doc.createElement('style');
+                    css.textContent=`
+                        header.pubnav, header.site-header, header.public-header, .public-nav,
+                        .site-nav, .navbar, .main-nav, .public-navbar,
+                        .floating-ai, #aiFab, #aiBox, #aiChat, .ai-fab,
+                        footer, .pubfooter, .site-footer {display:none!important}
+                        html{overflow:hidden!important} body.public{padding-top:0!important;margin:0!important;overflow:hidden!important} .pubmain{padding-top:0!important;margin-top:0!important}
+                    `;
+                    doc.head.appendChild(css);
+                    // The real public layout uses .pubnav, .pubfooter, and #aiFab.
+                    // Fit the embedded document to its content: one scroll bar only.
+                    const resize=()=>{
+                        if(!frame.isConnected || !doc.body) return;
+                        frame.style.height='1px';
+                        const h=Math.max(doc.body.scrollHeight,doc.documentElement.scrollHeight,600);
+                        frame.style.height=(h+16)+'px';
+                    };
+                    resize();
+                    if(frame._portalResizeObserver) frame._portalResizeObserver.disconnect();
+                    if(typeof ResizeObserver!=='undefined'){
+                        frame._portalResizeObserver=new ResizeObserver(resize);
+                        frame._portalResizeObserver.observe(doc.body);
+                    }
+                    doc.querySelectorAll('img').forEach(img=>img.addEventListener('load',resize,{once:true}));
+                    frame._portalResize=resize;
+                    doc.querySelectorAll('a[href]').forEach(a=>{
+                        a.addEventListener('click',event=>{
+                            const dest=new URL(a.href,window.location.href);
+                            if(dest.origin!==window.location.origin) return;
+                            if(!dest.pathname.startsWith('/Public/')) return;
+                            const path=dest.pathname.toLowerCase();
+                            let section=path.includes('/book')?'booking':
+                                path.includes('/doctor')?'doctors':
+                                path.includes('/location')?'branches':
+                                path.includes('/gallery')?'gallery':
+                                path.includes('/team')?'team':
+                                path.includes('/service')?'services':
+                                path.includes('/resource')?'resources':
+                                path.includes('/contact')?'contact':
+                                path.includes('/about')?'about':null;
+                            if(section){event.preventDefault();openPublic(section,dest.pathname+dest.search+dest.hash);}
+                        });
+                    });
+                    // Public AI links should use the patient assistant.
+                    doc.querySelectorAll('[onclick*="aiFab"]').forEach(b=>{
+                        b.removeAttribute('onclick');
+                        b.addEventListener('click',()=>toggleChat());
+                    });
+                }catch(e){console.warn('Unable to customize public content frame',e);}
+            }
+            document.querySelectorAll('.public-content-frame').forEach(frame=>{
+                frame.addEventListener('load',()=>preparePublicFrame(frame));
+            });
+
+
+            // Frontend-only profile controls. No false database-success messages.
+            let patientPhotoUrl=null;
+            const originalPhotoHtml=document.getElementById('profileAvatarPreview').innerHTML;
+            function previewPatientPhoto(input){
+                const file=input.files && input.files[0];if(!file)return;
+                if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2*1024*1024){
+                    alert('Please select a JPG, PNG, or WebP image up to 2 MB.');input.value='';return;
+                }
+                if(patientPhotoUrl)URL.revokeObjectURL(patientPhotoUrl);
+                patientPhotoUrl=URL.createObjectURL(file);
+                const img=document.createElement('img');img.src=patientPhotoUrl;img.alt='Patient photo preview';
+                document.getElementById('profileAvatarPreview').replaceChildren(img);
+                document.getElementById('removePhotoFlag').value='false';
+            }
+            function removePatientPhoto(){
+                document.getElementById('profilePhotoInput').value='';
+                document.getElementById('removePhotoFlag').value='true';
+                if(patientPhotoUrl){URL.revokeObjectURL(patientPhotoUrl);patientPhotoUrl=null;}
+                document.getElementById('profileAvatarPreview').innerHTML='<i class="fa-regular fa-user"></i>';
+                profileNotice('profileFeedback','Click Save Changes to remove the photo permanently.');
+            }
+            function profileNotice(id,message){const el=document.getElementById(id);el.textContent=message;el.classList.add('visible');}
+            async function postPatientForm(form){
+                const response=await fetch(form.action,{method:'POST',body:new FormData(form),credentials:'same-origin'});
+                let data={};try{data=await response.json();}catch{}
+                if(!response.ok||!data.saved)throw new Error(data.message||'Unable to save. Please try again.');
+                return data;
+            }
+            async function preparePatientProfile(event){
+                event.preventDefault();const form=event.target;if(!form.reportValidity())return;
+                const button=form.querySelector('button[type="submit"]');button.disabled=true;
+                profileNotice('profileFeedback','Saving to MySQL...');
+                try{
+                    const data=await postPatientForm(form);
+                    document.getElementById('profileDisplayName').textContent=data.fullName;
+                    if(data.photoPath){const img=document.createElement('img');img.src=data.photoPath;img.alt='Patient photo';document.getElementById('profileAvatarPreview').replaceChildren(img);}
+                    else document.getElementById('profileAvatarPreview').innerHTML='<i class="fa-regular fa-user"></i>';
+                    document.getElementById('removePhotoFlag').value='false';
+                    document.getElementById('profilePhotoInput').value='';
+                    profileNotice('profileFeedback','Saved successfully to MySQL.');
+                }catch(error){profileNotice('profileFeedback',error.message);}finally{button.disabled=false;}
+            }
+            function resetPatientProfileUI(){
+                document.getElementById('removePhotoFlag').value='false';
+                document.getElementById('profilePhotoInput').value='';
+                document.getElementById('profileAvatarPreview').innerHTML=originalPhotoHtml;
+                document.getElementById('profileFeedback').classList.remove('visible');
+            }
+            function togglePatientPassword(id,button){
+                const input=document.getElementById(id);input.type=input.type==='password'?'text':'password';
+                button.setAttribute('aria-label',input.type==='password'?'Show password':'Hide password');
+                button.querySelector('i').className=input.type==='password'?'fa-regular fa-eye':'fa-regular fa-eye-slash';
+            }
+            async function preparePasswordChange(event){
+                event.preventDefault();const form=event.target;
+                const next=document.getElementById('profileNewPassword').value;
+                const confirm=document.getElementById('profileConfirmPassword').value;
+                if(next!==confirm){profileNotice('passwordFeedback','New password and confirmation do not match.');return;}
+                const button=form.querySelector('button[type="submit"]');button.disabled=true;
+                profileNotice('passwordFeedback','Updating password...');
+                try{await postPatientForm(form);form.reset();profileNotice('passwordFeedback','Password updated successfully.');}
+                catch(error){profileNotice('passwordFeedback',error.message);}finally{button.disabled=false;}
+            }
+
+            function showPage(pageId) {
+
+                const target = document.getElementById(pageId);
+                if (!target || !target.classList.contains('page'))
+                    return;
+
+                document.querySelectorAll('.page')
+                    .forEach(page => {
+                        page.classList.remove('active');
+                    });
+
+                document.querySelectorAll('.menu-btn')
+                    .forEach(button => {
+                        button.classList.remove('active');
+                    });
+
+                target.classList.add('active');
+
+                const menu = document.querySelector(
+                    '.menu-btn[data-page="' + pageId + '"]'
+                );
+
+                if (menu) {
+                    menu.classList.add('active');
+                }
+
+                window.scrollTo(0, 0);
+            }
+
+            function toggleChat() {
+                document.getElementById('patientChat')
+                    .classList.toggle('open');
+            }
+
+            function addChatMessage(message, sender) {
+                const container =
+                    document.getElementById('chatMessages');
+
+                const div = document.createElement('div');
+                div.className =
+                    'chat-message' +
+                    (sender === 'user' ? ' user' : '');
+
+                div.textContent = message;
+                container.appendChild(div);
+
+                container.scrollTop =
+                    container.scrollHeight;
+            }
+
+            async function sendChat(event) {
+                event.preventDefault();
+
+                const input = document.getElementById('chatInput');
+                const question = input.value.trim();
+
+                if (!question) return;
+
+                addChatMessage(question, 'user');
+                input.value = '';
+
+                try {
+                    const response = await fetch('/Public/AskAi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            question: question
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('AI request failed');
+                    }
+
+                    const data = await response.json();
+
+                    addChatMessage(
+                        data.answer || 'No response available.',
+                        'bot'
+                    );
+
+                } catch (error) {
+                    addChatMessage(
+                        'Unable to connect to ARMELLE AI right now.',
+                        'bot'
+                    );
+                }
+            }
+    </script>
+
+</body>
+</html>
+
+
+<script>
+// Presentation mode: no writes to MySQL, no changes to actual patient records.
+(function(){
+ const demo={
+  appointments:[
+   ['General Medicine','Pending','Oct 19, 2026','Dr. Maria Santos'],
+   ['Dermatology','Pending','Oct 20, 2026','Dr. Alex Reyes'],
+   ['Pediatrics','Pending','Oct 21, 2026','Dr. Nina Cruz'],
+   ['Dental Consultation','Pending','Oct 22, 2026','Dr. Paolo Lim'],
+   ['ENT Consultation','Pending','Oct 23, 2026','Dr. Leah Ramos'],
+   ['Eye Consultation','Pending','Oct 24, 2026','Dr. Carlo Tan'],
+   ['Cardiology','Pending','Oct 26, 2026','Dr. Bea Garcia']
+  ],
+  records:[
+   ['Consultation','Oct 02, 2026','General checkup','Dr. Maria Santos'],
+   ['Consultation','Sep 24, 2026','Skin assessment','Dr. Alex Reyes'],
+   ['Consultation','Sep 15, 2026','Dental checkup','Dr. Paolo Lim'],
+   ['Consultation','Sep 08, 2026','ENT assessment','Dr. Leah Ramos'],
+   ['Consultation','Aug 27, 2026','Vision screening','Dr. Carlo Tan'],
+   ['Consultation','Aug 13, 2026','Routine follow-up','Dr. Bea Garcia'],
+   ['Consultation','Jul 30, 2026','Wellness consultation','Dr. Nina Cruz']
+  ],
+  labs:[
+   ['Complete Blood Count','Completed','Oct 02, 2026','Demo result: available'],
+   ['Chest X-Ray','Completed','Sep 26, 2026','Demo imaging report: available'],
+   ['Urinalysis','Completed','Sep 18, 2026','Demo result: available'],
+   ['Blood Chemistry','Completed','Sep 11, 2026','Demo result: available'],
+   ['ECG','Completed','Aug 29, 2026','Demo report: available'],
+   ['Ultrasound','Completed','Aug 15, 2026','Demo imaging report: available'],
+   ['Lipid Profile','Pending','Oct 21, 2026','Awaiting demo result']
+  ],
+  billing:[
+   ['General Consultation','Paid','Oct 02, 2026','₱600.00'],
+   ['Chest X-Ray','Paid','Sep 26, 2026','₱850.00'],
+   ['Dermatology','Paid','Sep 24, 2026','₱700.00'],
+   ['Urinalysis','Paid','Sep 18, 2026','₱250.00'],
+   ['Blood Chemistry','Paid','Sep 11, 2026','₱950.00'],
+   ['ECG','Paid','Aug 29, 2026','₱550.00'],
+   ['Cardiology Follow-up','Pending','Oct 26, 2026','₱900.00']
+  ],
+  promos:[
+   ['Welcome Patient Discount','Demo offer','10% off','Sample only'],
+   ['Laboratory Package','Demo offer','15% off','Sample only'],
+   ['Dental Checkup Promo','Demo offer','₱100 off','Sample only'],
+   ['Wellness Week','Demo offer','10% off','Sample only'],
+   ['Family Checkup','Demo offer','5% off','Sample only'],
+   ['Senior Citizen Discount','Demo example','20% off','Subject to eligibility'],
+   ['Follow-up Consultation','Demo offer','₱150 off','Sample only']
+  ]
+ };
+ function safe(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function draw(){
+  for(const [section,rows] of Object.entries(demo)){
+   const el=document.getElementById('armelle-demo-'+section);if(!el)continue;
+   el.innerHTML=rows.map((r,i)=>'<div class="record" style="margin:10px 0;padding:12px;border:1px solid #ddd;border-radius:8px"><strong>DEMO #'+(i+1)+' — '+safe(r[0])+'</strong><div>'+safe(r[1])+' · '+safe(r[2])+'</div><div>'+safe(r[3])+'</div></div>').join('');
+  }
+  const rec=document.getElementById('armelle-demo-records');
+  if(rec)rec.innerHTML+='<h3>DEMO ONLY — Prescription History (7)</h3>'+demo.records.map((r,i)=>'<div class="record" style="margin:10px 0;padding:12px;border:1px solid #ddd;border-radius:8px"><strong>DEMO Prescription #'+(i+1)+'</strong><div>'+safe(r[2])+' · '+safe(r[1])+'</div><div>Physician: '+safe(r[3])+'</div><div>Illustrative prescription entry only; no medication or dosage issued.</div><button type="button" class="btn" onclick="armelleViewDemoPrescription('+i+')">View Reseta</button></div>').join('');
+ }
+ window.armelleViewDemoPrescription=function(i){
+  const r=demo.records[i];if(!r)return;
+  let modal=document.getElementById('armelle-demo-rx-modal');
+  if(!modal){
+   modal=document.createElement('div');modal.id='armelle-demo-rx-modal';
+   modal.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:18px;';
+   modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+   document.body.appendChild(modal);
+  }
+  modal.innerHTML='<div role="dialog" aria-modal="true" aria-label="Demo prescription preview" style="background:#fff;color:#243046;border-radius:14px;max-width:600px;width:100%;max-height:90vh;overflow:auto;padding:25px;box-shadow:0 12px 35px #0005">'
+   +'<div style="display:flex;justify-content:space-between;gap:12px"><h2 style="margin:0">ARMELLE — Prescription Preview</h2><button type="button" onclick="document.getElementById(\'armelle-demo-rx-modal\').remove()" aria-label="Close" style="font-size:22px;cursor:pointer">×</button></div>'
+   +'<p style="color:#b42318;font-weight:700;border:1px solid #b42318;padding:8px">DEMO ONLY — NOT A VALID PRESCRIPTION</p>'
+   +'<p><strong>Reference:</strong> DEMO-RX-'+String(i+1).padStart(3,'0')+'</p>'
+   +'<p><strong>Patient:</strong> Sample Patient (fictional)</p>'
+   +'<p><strong>Consultation date:</strong> '+safe(r[1])+'</p>'
+   +'<p><strong>Physician (fictional):</strong> '+safe(r[3])+'</p>'
+   +'<p><strong>Consultation:</strong> '+safe(r[2])+'</p>'
+   +'<hr><h3>Prescription details</h3><p>No medicine, dosage, or medical instructions issued. This is a UI demonstration of the prescription viewer.</p>'
+   +'<p><strong>Status:</strong> Sample / Not released</p>'
+   +'<button type="button" class="btn" onclick="document.getElementById(\'armelle-demo-rx-modal\').remove()">Close Preview</button></div>';
+  const closeBtn=modal.querySelector('button');if(closeBtn)closeBtn.focus();
+ };
+ window.armelleToggleDemo=function(){
+  const visible=document.querySelector('.demo-section')?.style.display!=='none';
+  document.querySelectorAll('.demo-section').forEach(x=>x.style.display=visible?'none':'block');
+  const b=document.getElementById('armelleDemoButton');if(b)b.textContent=visible?'Show 7 sample records per section (DEMO)':'Hide demo records';
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',draw);else draw();
+})();
+</script>

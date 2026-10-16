@@ -1,0 +1,22 @@
+@model Armelle.Models.Patient
+@{ ViewData["Title"] = "Edit Patient"; }
+<div class="panel">
+ <h2>Edit Patient</h2>
+ <form class="form" method="post" action="/Clinic/UpdatePatient">
+  @Html.AntiForgeryToken()
+  <input type="hidden" name="Id" value="@Model.Id" />
+  <label>Full name</label><input name="Name" value="@Model.Name" required />
+  <label>Branch</label><select name="Branch">
+   @foreach(var b in new[]{"North QC","Central San Juan","South Makati"}){
+    if(Model.Branch==b){<option value="@b" selected>@b</option>}else{<option value="@b">@b</option>}
+   }
+  </select>
+  <label>Birth date</label><input type="date" name="BirthDate" value="@Model.BirthDate?.ToString("yyyy-MM-dd")" />
+  <label>Sex</label><input name="Sex" value="@Model.Sex" />
+  <label>Contact</label><input name="Contact" value="@Model.Contact" />
+  <label>Address</label><input name="Address" value="@Model.Address" />
+  <label>HMO</label><input name="Hmo" value="@Model.Hmo" />
+  <button class="primary" type="submit">Save Changes</button>
+  <a href="/Clinic/Patients">Cancel</a>
+ </form>
+</div>

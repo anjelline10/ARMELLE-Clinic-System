@@ -1,0 +1,82 @@
+@using System.Collections.Generic
+@{
+    Layout = null;
+    var stage = (string)(ViewBag.Stage ?? "Gate");
+    var groups = ViewBag.WorkforceGroups as Dictionary<string,List<string>> ?? new();
+    var selectedGroup = (string)(ViewBag.SelectedGroup ?? "");
+    var selectedMember = (string)(ViewBag.SelectedMember ?? "");
+    var memberPhotos = ViewBag.MemberPhotos as Dictionary<string,string> ?? new();
+    var icons = new Dictionary<string,string> {
+        ["Owner"]="✦",["Admin / System"]="⚙",["Manager"]="◆",["Doctors"]="⚕",["Nurses"]="♡",["Midwives"]="❀",
+        ["Reception & Appointments"]="▣",["Patient Services"]="◎",["Laboratory"]="⌁",["Radiology / Imaging"]="◫",["Pharmacy"]="✚",
+        ["Dental Staff"]="◇",["Billing & Cashier"]="₱",["Support"]="◌",["HR / Payroll"]="▤",["IT / System"]="⌘",["Security"]="◈",
+        ["Maintenance / Utility"]="△",["Other Staff"]="●"
+    };
+}
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/css/site.css"><title>ARMELLE Authorized Workforce Portal</title>
+</head>
+<body class="login workforcelogin">
+<div class="wf-premium-shell">
+    <aside class="wf-brand-panel">
+        <img src="/images/armelle-logo.png" class="loginlogo" alt="ARMELLE logo">
+        <p class="eyebrow">AUTHORIZED WORKFORCE PORTAL</p>
+        <h1>Your work. Your workspace.</h1>
+        <p>Secure access for ARMELLE physicians, clinical teams, operations, pharmacy, diagnostics and management.</p>
+        <div class="wf-steps"><span class="@(stage=="Gate"?"on":"done")">1</span><i></i><span class="@(stage=="Groups"?"on":stage!="Gate"?"done":"")">2</span><i></i><span class="@(stage=="Members"?"on":stage=="Password"?"done":"")">3</span><i></i><span class="@(stage=="Password"?"on":"")">4</span></div>
+        <small>Portal Password → Role → Team Member → Personal Password</small>
+        <a href="/Auth/Login">← Patient Login</a>
+    </aside>
+
+    <main class="wf-stage-panel">
+        @if(stage=="Gate"){
+            <div class="wf-stage-copy"><p class="eyebrow">STEP 1 OF 4</p><h2>Workforce authorization</h2><p>Enter the ARMELLE workforce portal password to view authorized team categories.</p></div>
+            <form method="post" action="/Auth/WorkforceGate" class="wf-gate-form">
+                <label>Authorized Workforce Password</label>
+                <input name="portalPassword" type="password" placeholder="Enter workforce portal password" autocomplete="current-password" required autofocus>
+                <button class="primary" type="submit">Unlock Workforce Portal</button>
+            </form>
+        }
+        else if(stage=="Groups"){
+            <div class="wf-stage-copy"><p class="eyebrow">STEP 2 OF 4</p><h2>Choose your work area</h2><p>Select the category that matches your ARMELLE role.</p></div>
+            <div class="wf-role-grid">
+            @foreach(var g in groups){
+                <a class="wf-role-card" href="/Auth/WorkforceLogin?group=@Uri.EscapeDataString(g.Key)">
+                    <span class="wf-role-icon">@(icons.ContainsKey(g.Key)?icons[g.Key]:"●")</span>
+                    <b>@g.Key</b><small>@g.Value.Count team member@(g.Value.Count==1?"":"s")</small>
+                </a>
+            }
+            </div>
+        }
+        else if(stage=="Members"){
+            <div class="wf-stage-copy"><p class="eyebrow">STEP 3 OF 4</p><h2>@selectedGroup</h2><p>Select your own profile. Your personal password will be requested next.</p></div>
+            <a class="wf-back" href="/Auth/WorkforceLogin">← Back to work areas</a>
+            <div class="wf-member-grid">
+            @if(groups.ContainsKey(selectedGroup) && groups[selectedGroup].Any()){
+                @foreach(var name in groups[selectedGroup]){
+                    <a class="wf-member-card" href="/Auth/WorkforceLogin?group=@Uri.EscapeDataString(selectedGroup)&member=@Uri.EscapeDataString(name)">
+                        <div class="wf-avatar">@if(memberPhotos.ContainsKey(name)){<img src="@memberPhotos[name]" alt="@name">}<span>@(name.Length>0?name.Substring(0,1).ToUpper():"A")</span></div>
+                        <b>@name</b><small>@selectedGroup</small><em>Select account →</em>
+                    </a>
+                }
+            } else { <div class="wf-empty"><b>No active team members yet.</b><p>Owner/Admin can add or activate employees in Employee Management.</p></div> }
+            </div>
+        }
+        else if(stage=="Password"){
+            <div class="wf-stage-copy"><p class="eyebrow">STEP 4 OF 4</p><h2>Welcome back.</h2><p>Confirm your personal password to open your role-specific ARMELLE dashboard.</p></div>
+            <a class="wf-back" href="/Auth/WorkforceLogin?group=@Uri.EscapeDataString(selectedGroup)">← Choose another team member</a>
+            <div class="wf-selected-profile"><div class="wf-avatar large">@if(memberPhotos.ContainsKey(selectedMember)){<img src="@memberPhotos[selectedMember]" alt="@selectedMember">}<span>@(selectedMember.Length>0?selectedMember.Substring(0,1).ToUpper():"A")</span></div><div><small>@selectedGroup</small><h3>@selectedMember</h3></div></div>
+            <form method="post" action="/Auth/WorkforceMemberLogin" class="wf-gate-form">
+                <input type="hidden" name="username" value="@selectedMember"><input type="hidden" name="group" value="@selectedGroup">
+                <label>Personal Password</label><input name="password" type="password" placeholder="Enter your personal password" required autofocus>
+                <button class="primary" type="submit">Open My Dashboard</button>
+            </form>
+            <p class="wf-demo-note">For newly generated demo workforce accounts, the temporary password is <b>armelle123</b>. Owner/Admin should change it before real deployment.</p>
+        }
+        @if(ViewBag.Error!=null){<div class="error wf-error">@ViewBag.Error</div>}
+    </main>
+</div>
+</body></html>

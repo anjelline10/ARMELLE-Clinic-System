@@ -1,0 +1,149 @@
+@model List<Armelle.Models.GalleryPhoto>
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Gallery";
+    bool canEdit = ViewBag.OwnerCanEdit == true;
+    var saved = Model.ToDictionary(x => x.Id);
+    var galleryItems = new List<Armelle.Models.GalleryPhoto>();
+    galleryItems.Add(saved.TryGetValue(1, out var photo1) ? photo1 : new Armelle.Models.GalleryPhoto { Id=1, Title="Main Building Exterior – Day", ImagePath="/images/facilities/gallery-1.svg" });
+    galleryItems.Add(saved.TryGetValue(2, out var photo2) ? photo2 : new Armelle.Models.GalleryPhoto { Id=2, Title="Main Building Exterior – Evening", ImagePath="/images/facilities/gallery-2.svg" });
+    galleryItems.Add(saved.TryGetValue(3, out var photo3) ? photo3 : new Armelle.Models.GalleryPhoto { Id=3, Title="Main Entrance & Drop-Off", ImagePath="/images/facilities/gallery-3.svg" });
+    galleryItems.Add(saved.TryGetValue(4, out var photo4) ? photo4 : new Armelle.Models.GalleryPhoto { Id=4, Title="Main Reception Lobby", ImagePath="/images/facilities/gallery-4.svg" });
+    galleryItems.Add(saved.TryGetValue(5, out var photo5) ? photo5 : new Armelle.Models.GalleryPhoto { Id=5, Title="Patient Waiting Lounge", ImagePath="/images/facilities/gallery-5.svg" });
+    galleryItems.Add(saved.TryGetValue(6, out var photo6) ? photo6 : new Armelle.Models.GalleryPhoto { Id=6, Title="Main Clinic Hallway", ImagePath="/images/facilities/gallery-6.svg" });
+    galleryItems.Add(saved.TryGetValue(7, out var photo7) ? photo7 : new Armelle.Models.GalleryPhoto { Id=7, Title="Information Desk", ImagePath="/images/facilities/gallery-7.svg" });
+    galleryItems.Add(saved.TryGetValue(8, out var photo8) ? photo8 : new Armelle.Models.GalleryPhoto { Id=8, Title="Appointment & Registration", ImagePath="/images/facilities/gallery-8.svg" });
+    galleryItems.Add(saved.TryGetValue(9, out var photo9) ? photo9 : new Armelle.Models.GalleryPhoto { Id=9, Title="Cashier & Billing", ImagePath="/images/facilities/gallery-9.svg" });
+    galleryItems.Add(saved.TryGetValue(10, out var photo10) ? photo10 : new Armelle.Models.GalleryPhoto { Id=10, Title="HMO & PhilHealth Desk", ImagePath="/images/facilities/gallery-10.svg" });
+    galleryItems.Add(saved.TryGetValue(11, out var photo11) ? photo11 : new Armelle.Models.GalleryPhoto { Id=11, Title="Patient Queue Area", ImagePath="/images/facilities/gallery-11.svg" });
+    galleryItems.Add(saved.TryGetValue(12, out var photo12) ? photo12 : new Armelle.Models.GalleryPhoto { Id=12, Title="General Medicine Consultation", ImagePath="/images/facilities/gallery-12.svg" });
+    galleryItems.Add(saved.TryGetValue(13, out var photo13) ? photo13 : new Armelle.Models.GalleryPhoto { Id=13, Title="General Medicine Examination", ImagePath="/images/facilities/gallery-13.svg" });
+    galleryItems.Add(saved.TryGetValue(14, out var photo14) ? photo14 : new Armelle.Models.GalleryPhoto { Id=14, Title="Internal Medicine Consultation", ImagePath="/images/facilities/gallery-14.svg" });
+    galleryItems.Add(saved.TryGetValue(15, out var photo15) ? photo15 : new Armelle.Models.GalleryPhoto { Id=15, Title="Internal Medicine Examination", ImagePath="/images/facilities/gallery-15.svg" });
+    galleryItems.Add(saved.TryGetValue(16, out var photo16) ? photo16 : new Armelle.Models.GalleryPhoto { Id=16, Title="Pediatric Waiting", ImagePath="/images/facilities/gallery-16.svg" });
+    galleryItems.Add(saved.TryGetValue(17, out var photo17) ? photo17 : new Armelle.Models.GalleryPhoto { Id=17, Title="Pediatric Consultation", ImagePath="/images/facilities/gallery-17.svg" });
+    galleryItems.Add(saved.TryGetValue(18, out var photo18) ? photo18 : new Armelle.Models.GalleryPhoto { Id=18, Title="Pediatric Examination", ImagePath="/images/facilities/gallery-18.svg" });
+    galleryItems.Add(saved.TryGetValue(19, out var photo19) ? photo19 : new Armelle.Models.GalleryPhoto { Id=19, Title="OB-GYN Consultation", ImagePath="/images/facilities/gallery-19.svg" });
+    galleryItems.Add(saved.TryGetValue(20, out var photo20) ? photo20 : new Armelle.Models.GalleryPhoto { Id=20, Title="OB-GYN Examination", ImagePath="/images/facilities/gallery-20.svg" });
+    galleryItems.Add(saved.TryGetValue(21, out var photo21) ? photo21 : new Armelle.Models.GalleryPhoto { Id=21, Title="Prenatal Assessment", ImagePath="/images/facilities/gallery-21.svg" });
+    galleryItems.Add(saved.TryGetValue(22, out var photo22) ? photo22 : new Armelle.Models.GalleryPhoto { Id=22, Title="Maternity Reception", ImagePath="/images/facilities/gallery-22.svg" });
+    galleryItems.Add(saved.TryGetValue(23, out var photo23) ? photo23 : new Armelle.Models.GalleryPhoto { Id=23, Title="Labor Assessment", ImagePath="/images/facilities/gallery-23.svg" });
+    galleryItems.Add(saved.TryGetValue(24, out var photo24) ? photo24 : new Armelle.Models.GalleryPhoto { Id=24, Title="Birthing Room", ImagePath="/images/facilities/gallery-24.svg" });
+    galleryItems.Add(saved.TryGetValue(25, out var photo25) ? photo25 : new Armelle.Models.GalleryPhoto { Id=25, Title="Newborn Care", ImagePath="/images/facilities/gallery-25.svg" });
+    galleryItems.Add(saved.TryGetValue(26, out var photo26) ? photo26 : new Armelle.Models.GalleryPhoto { Id=26, Title="Mother & Baby Recovery", ImagePath="/images/facilities/gallery-26.svg" });
+    galleryItems.Add(saved.TryGetValue(27, out var photo27) ? photo27 : new Armelle.Models.GalleryPhoto { Id=27, Title="Cardiology Consultation", ImagePath="/images/facilities/gallery-27.svg" });
+    galleryItems.Add(saved.TryGetValue(28, out var photo28) ? photo28 : new Armelle.Models.GalleryPhoto { Id=28, Title="ECG & Cardiac Assessment", ImagePath="/images/facilities/gallery-28.svg" });
+    galleryItems.Add(saved.TryGetValue(29, out var photo29) ? photo29 : new Armelle.Models.GalleryPhoto { Id=29, Title="Dermatology Consultation", ImagePath="/images/facilities/gallery-29.svg" });
+    galleryItems.Add(saved.TryGetValue(30, out var photo30) ? photo30 : new Armelle.Models.GalleryPhoto { Id=30, Title="Skin Examination & Treatment", ImagePath="/images/facilities/gallery-30.svg" });
+    galleryItems.Add(saved.TryGetValue(31, out var photo31) ? photo31 : new Armelle.Models.GalleryPhoto { Id=31, Title="ENT Consultation", ImagePath="/images/facilities/gallery-31.svg" });
+    galleryItems.Add(saved.TryGetValue(32, out var photo32) ? photo32 : new Armelle.Models.GalleryPhoto { Id=32, Title="ENT Examination & Procedure", ImagePath="/images/facilities/gallery-32.svg" });
+    galleryItems.Add(saved.TryGetValue(33, out var photo33) ? photo33 : new Armelle.Models.GalleryPhoto { Id=33, Title="ENT Diagnostic Equipment", ImagePath="/images/facilities/gallery-33.svg" });
+    galleryItems.Add(saved.TryGetValue(34, out var photo34) ? photo34 : new Armelle.Models.GalleryPhoto { Id=34, Title="Ophthalmology Consultation", ImagePath="/images/facilities/gallery-34.svg" });
+    galleryItems.Add(saved.TryGetValue(35, out var photo35) ? photo35 : new Armelle.Models.GalleryPhoto { Id=35, Title="Vision Screening", ImagePath="/images/facilities/gallery-35.svg" });
+    galleryItems.Add(saved.TryGetValue(36, out var photo36) ? photo36 : new Armelle.Models.GalleryPhoto { Id=36, Title="Eye Examination & Diagnostic", ImagePath="/images/facilities/gallery-36.svg" });
+    galleryItems.Add(saved.TryGetValue(37, out var photo37) ? photo37 : new Armelle.Models.GalleryPhoto { Id=37, Title="Orthopedic Consultation", ImagePath="/images/facilities/gallery-37.svg" });
+    galleryItems.Add(saved.TryGetValue(38, out var photo38) ? photo38 : new Armelle.Models.GalleryPhoto { Id=38, Title="Musculoskeletal Examination", ImagePath="/images/facilities/gallery-38.svg" });
+    galleryItems.Add(saved.TryGetValue(39, out var photo39) ? photo39 : new Armelle.Models.GalleryPhoto { Id=39, Title="Pulmonology Consultation", ImagePath="/images/facilities/gallery-39.svg" });
+    galleryItems.Add(saved.TryGetValue(40, out var photo40) ? photo40 : new Armelle.Models.GalleryPhoto { Id=40, Title="Respiratory Assessment", ImagePath="/images/facilities/gallery-40.svg" });
+    galleryItems.Add(saved.TryGetValue(41, out var photo41) ? photo41 : new Armelle.Models.GalleryPhoto { Id=41, Title="Endocrinology & Diabetes", ImagePath="/images/facilities/gallery-41.svg" });
+    galleryItems.Add(saved.TryGetValue(42, out var photo42) ? photo42 : new Armelle.Models.GalleryPhoto { Id=42, Title="Neurology Consultation & Examination", ImagePath="/images/facilities/gallery-42.svg" });
+    galleryItems.Add(saved.TryGetValue(43, out var photo43) ? photo43 : new Armelle.Models.GalleryPhoto { Id=43, Title="Gastroenterology Consultation", ImagePath="/images/facilities/gallery-43.svg" });
+    galleryItems.Add(saved.TryGetValue(44, out var photo44) ? photo44 : new Armelle.Models.GalleryPhoto { Id=44, Title="Nephrology Consultation", ImagePath="/images/facilities/gallery-44.svg" });
+    galleryItems.Add(saved.TryGetValue(45, out var photo45) ? photo45 : new Armelle.Models.GalleryPhoto { Id=45, Title="Urology Consultation", ImagePath="/images/facilities/gallery-45.svg" });
+    galleryItems.Add(saved.TryGetValue(46, out var photo46) ? photo46 : new Armelle.Models.GalleryPhoto { Id=46, Title="Mental Health Consultation", ImagePath="/images/facilities/gallery-46.svg" });
+    galleryItems.Add(saved.TryGetValue(47, out var photo47) ? photo47 : new Armelle.Models.GalleryPhoto { Id=47, Title="Rehabilitation Medicine Consultation", ImagePath="/images/facilities/gallery-47.svg" });
+    galleryItems.Add(saved.TryGetValue(48, out var photo48) ? photo48 : new Armelle.Models.GalleryPhoto { Id=48, Title="Physical Therapy & Exercise", ImagePath="/images/facilities/gallery-48.svg" });
+    galleryItems.Add(saved.TryGetValue(49, out var photo49) ? photo49 : new Armelle.Models.GalleryPhoto { Id=49, Title="Dental Reception", ImagePath="/images/facilities/gallery-49.svg" });
+    galleryItems.Add(saved.TryGetValue(50, out var photo50) ? photo50 : new Armelle.Models.GalleryPhoto { Id=50, Title="Dental Consultation", ImagePath="/images/facilities/gallery-50.svg" });
+    galleryItems.Add(saved.TryGetValue(51, out var photo51) ? photo51 : new Armelle.Models.GalleryPhoto { Id=51, Title="Dental Treatment", ImagePath="/images/facilities/gallery-51.svg" });
+    galleryItems.Add(saved.TryGetValue(52, out var photo52) ? photo52 : new Armelle.Models.GalleryPhoto { Id=52, Title="Dental X-Ray", ImagePath="/images/facilities/gallery-52.svg" });
+    galleryItems.Add(saved.TryGetValue(53, out var photo53) ? photo53 : new Armelle.Models.GalleryPhoto { Id=53, Title="Laboratory Reception", ImagePath="/images/facilities/gallery-53.svg" });
+    galleryItems.Add(saved.TryGetValue(54, out var photo54) ? photo54 : new Armelle.Models.GalleryPhoto { Id=54, Title="Blood Extraction", ImagePath="/images/facilities/gallery-54.svg" });
+    galleryItems.Add(saved.TryGetValue(55, out var photo55) ? photo55 : new Armelle.Models.GalleryPhoto { Id=55, Title="Specimen Collection", ImagePath="/images/facilities/gallery-55.svg" });
+    galleryItems.Add(saved.TryGetValue(56, out var photo56) ? photo56 : new Armelle.Models.GalleryPhoto { Id=56, Title="Clinical Laboratory Processing", ImagePath="/images/facilities/gallery-56.svg" });
+    galleryItems.Add(saved.TryGetValue(57, out var photo57) ? photo57 : new Armelle.Models.GalleryPhoto { Id=57, Title="Laboratory Equipment & Analysis", ImagePath="/images/facilities/gallery-57.svg" });
+    galleryItems.Add(saved.TryGetValue(58, out var photo58) ? photo58 : new Armelle.Models.GalleryPhoto { Id=58, Title="Diagnostic Imaging Reception", ImagePath="/images/facilities/gallery-58.svg" });
+    galleryItems.Add(saved.TryGetValue(59, out var photo59) ? photo59 : new Armelle.Models.GalleryPhoto { Id=59, Title="Digital X-Ray", ImagePath="/images/facilities/gallery-59.svg" });
+    galleryItems.Add(saved.TryGetValue(60, out var photo60) ? photo60 : new Armelle.Models.GalleryPhoto { Id=60, Title="X-Ray Control Room", ImagePath="/images/facilities/gallery-60.svg" });
+    galleryItems.Add(saved.TryGetValue(61, out var photo61) ? photo61 : new Armelle.Models.GalleryPhoto { Id=61, Title="Animal Bite Reception", ImagePath="/images/facilities/gallery-61.svg" });
+    galleryItems.Add(saved.TryGetValue(62, out var photo62) ? photo62 : new Armelle.Models.GalleryPhoto { Id=62, Title="Animal Bite Assessment", ImagePath="/images/facilities/gallery-62.svg" });
+    galleryItems.Add(saved.TryGetValue(63, out var photo63) ? photo63 : new Armelle.Models.GalleryPhoto { Id=63, Title="Wound Care & Treatment", ImagePath="/images/facilities/gallery-63.svg" });
+    galleryItems.Add(saved.TryGetValue(64, out var photo64) ? photo64 : new Armelle.Models.GalleryPhoto { Id=64, Title="Anti-Rabies Vaccination", ImagePath="/images/facilities/gallery-64.svg" });
+    galleryItems.Add(saved.TryGetValue(65, out var photo65) ? photo65 : new Armelle.Models.GalleryPhoto { Id=65, Title="General Vaccination", ImagePath="/images/facilities/gallery-65.svg" });
+    galleryItems.Add(saved.TryGetValue(66, out var photo66) ? photo66 : new Armelle.Models.GalleryPhoto { Id=66, Title="Vaccine Preparation & Storage", ImagePath="/images/facilities/gallery-66.svg" });
+    galleryItems.Add(saved.TryGetValue(67, out var photo67) ? photo67 : new Armelle.Models.GalleryPhoto { Id=67, Title="Minor Outpatient Procedure", ImagePath="/images/facilities/gallery-67.svg" });
+    galleryItems.Add(saved.TryGetValue(68, out var photo68) ? photo68 : new Armelle.Models.GalleryPhoto { Id=68, Title="Sterile Preparation", ImagePath="/images/facilities/gallery-68.svg" });
+    galleryItems.Add(saved.TryGetValue(69, out var photo69) ? photo69 : new Armelle.Models.GalleryPhoto { Id=69, Title="ARMELLE Pharmacy", ImagePath="/images/facilities/gallery-69.svg" });
+    galleryItems.Add(saved.TryGetValue(70, out var photo70) ? photo70 : new Armelle.Models.GalleryPhoto { Id=70, Title="Pharmacy Dispensing", ImagePath="/images/facilities/gallery-70.svg" });
+    galleryItems.Add(saved.TryGetValue(71, out var photo71) ? photo71 : new Armelle.Models.GalleryPhoto { Id=71, Title="Prescription Processing", ImagePath="/images/facilities/gallery-71.svg" });
+    galleryItems.Add(saved.TryGetValue(72, out var photo72) ? photo72 : new Armelle.Models.GalleryPhoto { Id=72, Title="Medicine Storage & Inventory", ImagePath="/images/facilities/gallery-72.svg" });
+    galleryItems.Add(saved.TryGetValue(73, out var photo73) ? photo73 : new Armelle.Models.GalleryPhoto { Id=73, Title="Medicine Pickup", ImagePath="/images/facilities/gallery-73.svg" });
+    galleryItems.Add(saved.TryGetValue(74, out var photo74) ? photo74 : new Armelle.Models.GalleryPhoto { Id=74, Title="Central Nurse Station", ImagePath="/images/facilities/gallery-74.svg" });
+    galleryItems.Add(saved.TryGetValue(75, out var photo75) ? photo75 : new Armelle.Models.GalleryPhoto { Id=75, Title="Patient Vitals & Assessment", ImagePath="/images/facilities/gallery-75.svg" });
+    galleryItems.Add(saved.TryGetValue(76, out var photo76) ? photo76 : new Armelle.Models.GalleryPhoto { Id=76, Title="Treatment & Medication", ImagePath="/images/facilities/gallery-76.svg" });
+    galleryItems.Add(saved.TryGetValue(77, out var photo77) ? photo77 : new Armelle.Models.GalleryPhoto { Id=77, Title="Doctors Lounge", ImagePath="/images/facilities/gallery-77.svg" });
+    galleryItems.Add(saved.TryGetValue(78, out var photo78) ? photo78 : new Armelle.Models.GalleryPhoto { Id=78, Title="Nurses Lounge", ImagePath="/images/facilities/gallery-78.svg" });
+    galleryItems.Add(saved.TryGetValue(79, out var photo79) ? photo79 : new Armelle.Models.GalleryPhoto { Id=79, Title="Staff Break Room", ImagePath="/images/facilities/gallery-79.svg" });
+    galleryItems.Add(saved.TryGetValue(80, out var photo80) ? photo80 : new Armelle.Models.GalleryPhoto { Id=80, Title="Staff Locker Room", ImagePath="/images/facilities/gallery-80.svg" });
+    galleryItems.Add(saved.TryGetValue(81, out var photo81) ? photo81 : new Armelle.Models.GalleryPhoto { Id=81, Title="Clinic Administration Office", ImagePath="/images/facilities/gallery-81.svg" });
+    galleryItems.Add(saved.TryGetValue(82, out var photo82) ? photo82 : new Armelle.Models.GalleryPhoto { Id=82, Title="Branch Manager Office", ImagePath="/images/facilities/gallery-82.svg" });
+    galleryItems.Add(saved.TryGetValue(83, out var photo83) ? photo83 : new Armelle.Models.GalleryPhoto { Id=83, Title="Human Resources Office", ImagePath="/images/facilities/gallery-83.svg" });
+    galleryItems.Add(saved.TryGetValue(84, out var photo84) ? photo84 : new Armelle.Models.GalleryPhoto { Id=84, Title="Medical Records Office", ImagePath="/images/facilities/gallery-84.svg" });
+    galleryItems.Add(saved.TryGetValue(85, out var photo85) ? photo85 : new Armelle.Models.GalleryPhoto { Id=85, Title="Finance & Accounting Office", ImagePath="/images/facilities/gallery-85.svg" });
+    galleryItems.Add(saved.TryGetValue(86, out var photo86) ? photo86 : new Armelle.Models.GalleryPhoto { Id=86, Title="IT & System Administration", ImagePath="/images/facilities/gallery-86.svg" });
+    galleryItems.Add(saved.TryGetValue(87, out var photo87) ? photo87 : new Armelle.Models.GalleryPhoto { Id=87, Title="Patient Support & Live Agent", ImagePath="/images/facilities/gallery-87.svg" });
+    galleryItems.Add(saved.TryGetValue(88, out var photo88) ? photo88 : new Armelle.Models.GalleryPhoto { Id=88, Title="Accessible Patient Restroom", ImagePath="/images/facilities/gallery-88.svg" });
+    galleryItems.Add(saved.TryGetValue(89, out var photo89) ? photo89 : new Armelle.Models.GalleryPhoto { Id=89, Title="Public Restroom", ImagePath="/images/facilities/gallery-89.svg" });
+    galleryItems.Add(saved.TryGetValue(90, out var photo90) ? photo90 : new Armelle.Models.GalleryPhoto { Id=90, Title="Utility & Housekeeping", ImagePath="/images/facilities/gallery-90.svg" });
+    galleryItems.Add(saved.TryGetValue(91, out var photo91) ? photo91 : new Armelle.Models.GalleryPhoto { Id=91, Title="Medical Supply Storage", ImagePath="/images/facilities/gallery-91.svg" });
+    galleryItems.Add(saved.TryGetValue(92, out var photo92) ? photo92 : new Armelle.Models.GalleryPhoto { Id=92, Title="General Storage", ImagePath="/images/facilities/gallery-92.svg" });
+    galleryItems.Add(saved.TryGetValue(93, out var photo93) ? photo93 : new Armelle.Models.GalleryPhoto { Id=93, Title="Emergency Assessment & Referral", ImagePath="/images/facilities/gallery-93.svg" });
+    galleryItems.Add(saved.TryGetValue(94, out var photo94) ? photo94 : new Armelle.Models.GalleryPhoto { Id=94, Title="Emergency Equipment Station", ImagePath="/images/facilities/gallery-94.svg" });
+    galleryItems.Add(saved.TryGetValue(95, out var photo95) ? photo95 : new Armelle.Models.GalleryPhoto { Id=95, Title="Security & Monitoring", ImagePath="/images/facilities/gallery-95.svg" });
+    galleryItems.AddRange(Model.Where(x => x.Id > 95).OrderBy(x => x.Id));
+}
+<section class="pagehero"><p class="eyebrow">ARMELLE GALLERY</p><h1>Complete Facilities Gallery</h1><p>Explore ARMELLE clinic facilities and departments.</p></section>
+@if (canEdit)
+{
+    <section style="margin:20px auto;max-width:1100px;padding:20px;border:2px solid #e7b7c8;border-radius:16px;background:#fff4f8">
+      <h2>Owner Gallery Management</h2><p>Upload a new clinic photo or replace any gallery image below. Changes appear immediately for public visitors and patients.</p>
+      @if (Context.Request.Query.ContainsKey("updated")) { <p style="color:green">Gallery photo saved successfully.</p> }
+      <form asp-controller="Public" asp-action="UploadGallery" method="post" enctype="multipart/form-data" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="0" />
+        <input name="title" placeholder="New photo title" maxlength="150" required style="padding:10px" />
+        <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
+        <button type="submit" style="background:#933b63;color:white;padding:10px 20px;border:0;border-radius:8px">Upload New Photo</button>
+      </form>
+    </section>
+}
+<section class="fullgallery">
+@foreach (var item in galleryItems)
+{
+  <article>
+    <img src="@item.ImagePath" alt="@item.Title" loading="lazy" />
+    <h3>@item.Title</h3><span>ARMELLE facility gallery</span>
+    @if (canEdit)
+    {
+      <details style="margin:12px 0;padding:10px;border:1px solid #e9c9d5;border-radius:10px;background:#fff">
+        <summary style="cursor:pointer;color:#883957;font-weight:bold">Replace / Edit Photo</summary>
+        <form asp-controller="Public" asp-action="UploadGallery" method="post" enctype="multipart/form-data" style="display:grid;gap:8px;margin-top:12px">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="id" value="@item.Id" />
+          <input name="title" value="@item.Title" maxlength="150" required aria-label="Photo title" />
+          <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
+          <button type="submit" style="background:#933b63;color:white;padding:9px;border:0;border-radius:8px">Save Photo</button>
+        </form>
+        @if (item.IsCustom)
+        {
+          <form asp-controller="Public" asp-action="DeleteGallery" method="post" onsubmit="return confirm('Remove this uploaded photo?')" style="margin-top:8px">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@item.Id" />
+            <button type="submit">@(item.Id <= 95 ? "Restore Default Photo" : "Delete Photo")</button>
+          </form>
+        }
+      </details>
+    }
+  </article>
+}
+</section>
